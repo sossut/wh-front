@@ -74,8 +74,8 @@ const Spot: React.FC<SpotProps> = ({
                   {
                     <Pallet
                       // onDragStart={handleDragStart}
-                      key={currentPallet?.id}
-                      {...currentPallet}
+                      // key={currentPallet?.id}
+                      // {...currentPallet}
                       products={currentPallet?.products}
                       id={currentPallet?.id}
                       draggable={!!currentPallet?.id}
