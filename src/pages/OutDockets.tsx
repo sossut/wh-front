@@ -1,7 +1,7 @@
 import React from 'react';
 
-const Dockets = () => {
+const OutDockets = () => {
   return <div>Dockets</div>;
 };
 
-export default Dockets;
+export default OutDockets;

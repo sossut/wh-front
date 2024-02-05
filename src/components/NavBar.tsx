@@ -1,12 +1,15 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import NavBarProfile from './NavBarProfile';
+import logo from '../assets/logo_small.svg';
 
 const NavBar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-core">
-        <NavLink to={'/'} className="navbar-logo"></NavLink>
+        <NavLink id="logo" to={'/'} className="navbar-logo">
+          <img src={logo}></img>
+        </NavLink>
         <NavLink to={'/'} className="navbar-link">
           Etusivu
         </NavLink>
@@ -18,6 +21,9 @@ const NavBar = () => {
         </NavLink>
         <NavLink to={'/lahetteet'} className="navbar-link">
           Lähetteet
+        </NavLink>
+        <NavLink to={'/saapuneet'} className="navbar-link">
+          Saapuneet
         </NavLink>
       </div>
       <NavBarProfile />
