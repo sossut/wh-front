@@ -1,15 +1,20 @@
 import React from 'react';
 import { useWarehouse } from '../hooks/ApiHooks';
+import { RowProps } from './Row';
+import { GapProps } from './Gap';
 
 export interface WarehouseSetupModalProps {
   onClose: () => void;
+  warehouse: RowProps[];
 }
 
 const WarehouseSetupModal: React.FC<WarehouseSetupModalProps> = ({
-  onClose
+  onClose,
+  warehouse
 }) => {
   const { postSpots } = useWarehouse();
   const [numberOfRows, setNumberOfRows] = React.useState(0);
+  const [isReady, setIsReady] = React.useState(false);
   const [rows, setRows] = React.useState(Array(numberOfRows).fill(0));
   // const [selectedRow, setSelectedRow] = React.useState<number | null>(null);
   // const [gaps, setGaps] = React.useState(() => {
@@ -23,6 +28,15 @@ const WarehouseSetupModal: React.FC<WarehouseSetupModalProps> = ({
   const handleClick = () => {
     onClose();
   };
+  React.useEffect(() => {
+    setNumberOfRows(warehouse.length);
+    if (warehouse.length > 0) {
+      setIsReady(true);
+    }
+    const spots = (warehouse[0]?.data?.[0] as GapProps | undefined)?.data
+      ?.length;
+    setNumberOfSpotsOnGaps(spots || 0);
+  }, [warehouse]);
 
   const handleNumberOfRowsChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -69,6 +83,9 @@ const WarehouseSetupModal: React.FC<WarehouseSetupModalProps> = ({
   //     setSelectedRow(index);
   //   };
 
+  const handleEnable = () => {
+    setIsReady(false);
+  };
   const handleSubmit = () => {
     console.log('Rows', rows);
     const obj = {
@@ -91,57 +108,72 @@ const WarehouseSetupModal: React.FC<WarehouseSetupModalProps> = ({
     console.log('obj', obj);
     postSpots(obj);
   };
-  React.useEffect(() => {
-    console.log('Rows', rows);
-    console.log('Number of spots on gaps', numberOfSpotsOnGaps);
-  }, [rows, numberOfSpotsOnGaps]);
+  // React.useEffect(() => {
+  //   console.log('Rows', rows);
+  //   console.log('Number of spots on gaps', numberOfSpotsOnGaps);
+  // }, [rows, numberOfSpotsOnGaps]);
   return (
     <div className="modal">
       <button className="close-button" onClick={handleClick}>
         Sulje
       </button>
-      <div className="modal-content">
-        <h3>Varaston asetukset</h3>
-        <div className="wh-setup">
-          <div>
-            <label htmlFor="rows">Kuinka monta riviä</label>
-            <input
-              type="number"
-              id="rows"
-              name="rows"
-              onChange={handleNumberOfRowsChange}
-            />
-          </div>
-          <div>
-            <label htmlFor="rows">Kuinka monta paikkaa per väli</label>
-            <input
-              onChange={handleNumberOfSpotsOnGapsChange}
-              type="number"
-              id="rows"
-              name="rows"
-            />
-          </div>
-
-          {rows.map((row, index) => (
-            <div key={index}>
-              <label htmlFor={`row-${index}`}>Rivi {index + 1} välit</label>
+      {!isReady && (
+        <div className="modal-content">
+          <h3>Varaston asetukset</h3>
+          <div className="wh-setup">
+            <div>
+              <label htmlFor="rows">Kuinka monta riviä</label>
               <input
                 type="number"
-                id={`row-${index}`}
-                name={`row-${index}`}
-                value={row}
-                onChange={handleRowsChange(index)}
+                id="rows"
+                value={numberOfRows}
+                name="rows"
+                onChange={handleNumberOfRowsChange}
               />
-              {/* <button onClick={editRow(index)} className="edit-row-button">
+            </div>
+            <div>
+              <label htmlFor="rows">Kuinka monta paikkaa per väli</label>
+              <input
+                onChange={handleNumberOfSpotsOnGapsChange}
+                type="number"
+                id="rows"
+                value={numberOfSpotsOnGaps}
+                name="rows"
+              />
+            </div>
+
+            {rows.map((row, index) => (
+              <div key={index}>
+                <label htmlFor={`row-${index}`}>Rivi {index + 1} välit</label>
+                <input
+                  type="number"
+                  id={`row-${index}`}
+                  name={`row-${index}`}
+                  value={row}
+                  onChange={handleRowsChange(index)}
+                />
+                {/* <button onClick={editRow(index)} className="edit-row-button">
                 Muokkaa rivin välejä
               </button> */}
-            </div>
-          ))}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-      <button className="save-button" onClick={handleSubmit}>
-        Tallenna
-      </button>
+      )}
+      {!isReady && (
+        <button className="save-button" onClick={handleSubmit}>
+          Tallenna
+        </button>
+      )}
+      {isReady && (
+        <div>
+          <h3>Varaston asetukset ovat valmiit</h3>
+          <p>Muuttaminen rikkoo varaston</p>
+          <button className="enable-button" onClick={handleEnable}>
+            Avaa asetukset
+          </button>
+        </div>
+      )}
     </div>
   );
 };

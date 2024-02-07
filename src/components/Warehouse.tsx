@@ -95,7 +95,10 @@ const Warehouse: React.FC<WarehouseProps> = () => {
         </table>
       </div>
       {isModalOpen && (
-        <WarehouseSetupModal onClose={handleClick}></WarehouseSetupModal>
+        <WarehouseSetupModal
+          warehouse={rows}
+          onClose={handleClick}
+        ></WarehouseSetupModal>
       )}
     </>
   );
