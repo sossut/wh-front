@@ -29,8 +29,12 @@ const Pallet: React.FC<PalletProps> = ({
     ['draggable']: id != null
   });
   React.useEffect(() => {
-    const sorted = products?.sort((a, b) => a.code.localeCompare(b.code));
-    setProductsState(sorted || []);
+    if (Array.isArray(products)) {
+      const sorted = products.sort((a, b) => a.code.localeCompare(b.code));
+      setProductsState(sorted);
+    } else {
+      setProductsState([]);
+    }
   }, [products]);
   return (
     <div

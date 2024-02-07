@@ -173,6 +173,7 @@ const PalletModal: React.FC<PalletModalProps> = ({
       if (onUpdate) {
         onUpdate(updatedPallet);
       }
+      onClose();
     } catch (error) {
       console.log(error);
     }
@@ -186,7 +187,7 @@ const PalletModal: React.FC<PalletModalProps> = ({
       <button className="close-button" onClick={handleClick}>
         Sulje
       </button>
-      <div className="pallet-modal-content">
+      <div className="modal-content">
         <h3>Lavan Tuotteet</h3>
         <form className="pallet-form" onSubmit={handleFormSubmit}>
           <label htmlFor="products-select">Tuotteet</label>

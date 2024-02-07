@@ -5,6 +5,7 @@ import { useWarehouse } from '../hooks/ApiHooks';
 
 import { PalletProps } from './Pallet';
 import { SpotProps } from './Spot';
+import WarehouseSetupModal from './WarehouseSetupModal';
 export interface WarehouseProps {
   id?: number;
   name?: string;
@@ -13,6 +14,7 @@ export interface WarehouseProps {
 }
 
 const Warehouse: React.FC<WarehouseProps> = () => {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
   const { user } = useContext(AppContext);
   console.log(user);
   const { rows, getRowsWithGapsWithSpots, getPallets, pallets } =
@@ -27,6 +29,10 @@ const Warehouse: React.FC<WarehouseProps> = () => {
     updateFunction: (prevPallets: PalletProps[]) => PalletProps[]
   ) => {
     setStatePallets(updateFunction);
+  };
+
+  const handleClick = () => {
+    setIsModalOpen((prevIsModalOpen) => !prevIsModalOpen);
   };
 
   useEffect(() => {
@@ -66,24 +72,32 @@ const Warehouse: React.FC<WarehouseProps> = () => {
   }, [statePallets]);
 
   return (
-    <div id="a">
-      <table className="warehouse-table">
-        <tbody className="warehouse-tbody">
-          {rows?.map((row, index) => {
-            return (
-              <Row
-                stateChanger={handleState}
-                pallets={statePallets}
-                key={index}
-                id={row.id}
-                rowNumber={row.rowNumber}
-                data={row.data}
-              />
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <>
+      <button className="setup-button" onClick={handleClick}>
+        Setup
+      </button>
+      <div id="warehouse">
+        <table className="warehouse-table">
+          <tbody className="warehouse-tbody">
+            {rows?.map((row, index) => {
+              return (
+                <Row
+                  stateChanger={handleState}
+                  pallets={statePallets}
+                  key={index}
+                  id={row.id}
+                  rowNumber={row.rowNumber}
+                  data={row.data}
+                />
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {isModalOpen && (
+        <WarehouseSetupModal onClose={handleClick}></WarehouseSetupModal>
+      )}
+    </>
   );
 };
 
