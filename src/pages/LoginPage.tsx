@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import LoginForm from '../components/LoginForm';
-const Login = () => {
+const LoginPage = () => {
   const [toggle, setToggle] = useState(true);
   return (
     <>
@@ -10,4 +10,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;

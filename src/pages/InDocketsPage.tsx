@@ -1,7 +1,7 @@
 import React from 'react';
 
-const InDockets = () => {
+const InDocketsPage = () => {
   return <div>InDockets</div>;
 };
 
-export default InDockets;
+export default InDocketsPage;

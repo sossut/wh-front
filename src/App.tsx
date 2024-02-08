@@ -3,13 +3,13 @@ import React from 'react';
 import './App.css';
 import NavBar from './components/NavBar';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import Warehouse from './components/Warehouse';
-import OutDockets from './pages/OutDockets';
-import InDockets from './pages/InDockets';
-import Products from './pages/Products';
+import WarehousePage from './pages/WarehousePage';
+import OutDocketsPage from './pages/OutDocketsPage';
+import InDocketsPage from './pages/InDocketsPage';
+import ProductsPage from './pages/ProductsPage';
 import Home from './pages/Home';
-import Profile from './pages/Profile';
-import Login from './pages/Login';
+import ProfilePage from './pages/ProfilePage';
+import LoginPage from './pages/LoginPage';
 import { AppProvider } from './contexts/AppContext';
 
 const App: React.FC = () => {
@@ -19,12 +19,12 @@ const App: React.FC = () => {
         <NavBar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/varasto" element={<Warehouse />} />
-          <Route path="/tuotteet" element={<Products />} />
-          <Route path="/lahetteet" element={<OutDockets />} />
-          <Route path="/saapuneet" element={<InDockets />} />
-          <Route path="/profiili" element={<Profile />} />
-          <Route path="/kirjaudu" element={<Login />} />
+          <Route path="/varasto" element={<WarehousePage />} />
+          <Route path="/tuotteet" element={<ProductsPage />} />
+          <Route path="/lahteneet" element={<OutDocketsPage />} />
+          <Route path="/saapuneet" element={<InDocketsPage />} />
+          <Route path="/profiili" element={<ProfilePage />} />
+          <Route path="/kirjaudu" element={<LoginPage />} />
         </Routes>
       </AppProvider>
     </Router>

@@ -19,8 +19,8 @@ const NavBar = () => {
         <NavLink to={'/tuotteet'} className="navbar-link">
           Tuotteet
         </NavLink>
-        <NavLink to={'/lahetteet'} className="navbar-link">
-          Lähetteet
+        <NavLink to={'/lahteneet'} className="navbar-link">
+          Lähteneet
         </NavLink>
         <NavLink to={'/saapuneet'} className="navbar-link">
           Saapuneet
