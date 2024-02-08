@@ -20,6 +20,12 @@ export interface SpotProps {
   stateChanger: (
     updateFunction: (prevPallets: PalletProps[]) => PalletProps[]
   ) => void;
+  gap?: {
+    gapNumber: number;
+    row: {
+      rowNumber: number;
+    };
+  };
 }
 
 const Spot: React.FC<SpotProps> = ({

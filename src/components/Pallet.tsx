@@ -5,8 +5,8 @@ import clsx from 'clsx';
 
 export interface PalletProps extends React.PropsWithChildren {
   id?: number;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
   products?: Product[];
 
   spotId?: number;

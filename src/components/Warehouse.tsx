@@ -6,6 +6,7 @@ import { useWarehouse } from '../hooks/ApiHooks';
 import { PalletProps } from './Pallet';
 import { SpotProps } from './Spot';
 import WarehouseSetupModal from './WarehouseSetupModal';
+import WarehouseFindProductModal from './WarehouseFindProductModal';
 export interface WarehouseProps {
   id?: number;
   name?: string;
@@ -14,12 +15,14 @@ export interface WarehouseProps {
 }
 
 const Warehouse: React.FC<WarehouseProps> = () => {
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isSetupModalOpen, setIsSetupModalOpen] = React.useState(false);
+  const [isFindProductModalOpen, setIsFindProductModalOpen] =
+    React.useState(false);
   const { user } = useContext(AppContext);
   console.log(user);
   const { rows, getRowsWithGapsWithSpots, getPallets, pallets } =
     useWarehouse();
-
+  const [productCode, setProductCode] = React.useState<string>('');
   console.log(rows);
   console.log(pallets);
   const [statePallets, setStatePallets] = React.useState<PalletProps[]>([]);
@@ -31,8 +34,21 @@ const Warehouse: React.FC<WarehouseProps> = () => {
     setStatePallets(updateFunction);
   };
 
+  const handleSumbit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log('Submitting');
+  };
+
   const handleClick = () => {
-    setIsModalOpen((prevIsModalOpen) => !prevIsModalOpen);
+    setIsSetupModalOpen((prevIsModalOpen) => !prevIsModalOpen);
+  };
+
+  const findProduct = () => {
+    const input = document.getElementById(
+      'find-product-input'
+    ) as HTMLInputElement;
+    setProductCode(input.value);
+    setIsFindProductModalOpen((prevIsModalOpen) => !prevIsModalOpen);
   };
 
   useEffect(() => {
@@ -72,10 +88,16 @@ const Warehouse: React.FC<WarehouseProps> = () => {
   }, [statePallets]);
 
   return (
-    <>
-      <button className="setup-button" onClick={handleClick}>
-        Setup
-      </button>
+    <div>
+      <div className="wh-setup">
+        <button className="setup-button" onClick={handleClick}>
+          Setup
+        </button>
+        <form onSubmit={handleSumbit} className="find-products-form">
+          <input id="find-product-input" placeholder="Etsi tuotetta"></input>
+          <button onClick={findProduct}>Etsi</button>
+        </form>
+      </div>
       <div id="warehouse">
         <table className="warehouse-table">
           <tbody className="warehouse-tbody">
@@ -94,13 +116,19 @@ const Warehouse: React.FC<WarehouseProps> = () => {
           </tbody>
         </table>
       </div>
-      {isModalOpen && (
+      {isSetupModalOpen && (
         <WarehouseSetupModal
           warehouse={rows}
           onClose={handleClick}
         ></WarehouseSetupModal>
       )}
-    </>
+      {isFindProductModalOpen && (
+        <WarehouseFindProductModal
+          onClose={() => setIsFindProductModalOpen(false)}
+          productCode={productCode}
+        ></WarehouseFindProductModal>
+      )}
+    </div>
   );
 };
 

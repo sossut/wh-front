@@ -299,11 +299,27 @@ const useProducts = () => {
     }
   };
 
+  const getSpotsByProductCode = async (code = ''): Promise<SpotProps[]> => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const spots = await fetchJson(`${apiUrl}/spot/product/${code}`, options);
+      return spots as SpotProps[];
+    } catch (error) {
+      console.log(error);
+      return {} as SpotProps[];
+    }
+  };
+
   useEffect(() => {
     getProducts();
   }, []);
 
-  return { products, getProducts, getProduct, product };
+  return { products, getProducts, getProduct, product, getSpotsByProductCode };
 };
 
 export { useLogin, useWarehouse, useProducts };

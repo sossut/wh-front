@@ -18,6 +18,14 @@
   margin: 0;
   padding: 0;
 }
+html,
+body,
+#root {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -31,7 +39,7 @@ a:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100vw;
+  width: 100%;
   background-color: #f97e7e;
   height: 75px;
 }
@@ -252,12 +260,17 @@ h1 {
 
 .wh-setup {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: row;
+  margin: 0.5rem;
   align-items: center;
 }
+.find-products-form {
+  width: 100%;
+  margin: 0 1.5rem;
+}
 .wh-setup input {
-  width: 15%;
+  width: 100px;
+  margin-right: 0.2rem;
 }
 .edit-row-button {
   padding: 0.2rem 0.5rem;
