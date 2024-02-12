@@ -1,11 +1,13 @@
 import React from 'react';
 import { Product } from '../intefaces/Product';
+import { useProducts } from '../hooks/ApiHooks';
 
 export interface AddProductModalProps {
   onClose: () => void;
 }
 
 const AddProductModal: React.FC<AddProductModalProps> = ({ onClose }) => {
+  const { postProduct } = useProducts();
   const hanldeClick = () => {
     onClose();
   };
@@ -22,16 +24,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ onClose }) => {
   const handleFormSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     console.log(product);
+    postProduct(product);
   };
-  const setProductCode = (code: string) => {
-    setProduct({ ...product, code });
-  };
-  const setProductName = (name: string) => {
-    setProduct({ ...product, name });
-  };
-  const setProductWeight = (weight: number) => {
-    setProduct({ ...product, weight });
-  };
+
   return (
     <div className="modal">
       <button className="close-button" onClick={hanldeClick}>
@@ -48,7 +43,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ onClose }) => {
               name="product-code"
               required
               value={product.code}
-              onChange={(event) => setProductCode(event.target.value)}
+              onChange={(event) =>
+                setProduct({ ...product, code: event.target.value })
+              }
             />
           </div>
           <div>
@@ -59,7 +56,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ onClose }) => {
               name="product-name"
               required
               value={product.name}
-              onChange={(event) => setProductName(event.target.value)}
+              onChange={(event) =>
+                setProduct({ ...product, name: event.target.value })
+              }
             />
           </div>
 
@@ -71,8 +70,55 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ onClose }) => {
               name="product-weight"
               required
               value={product.weight}
-              onChange={(event) => setProductWeight(Number(event.target.value))}
+              onChange={(event) =>
+                setProduct({ ...product, weight: Number(event.target.value) })
+              }
             />
+          </div>
+          <div>
+            <label htmlFor="product-quantity">Tuotetta varastossa</label>
+            <input
+              type="number"
+              id="product-quantity"
+              name="product-quantity"
+              required
+              value={product.quantity}
+              onChange={(event) =>
+                setProduct({ ...product, quantity: Number(event.target.value) })
+              }
+            />
+          </div>
+          <div>
+            <label htmlFor="product-price">Tuotteen hinta</label>
+            <input
+              type="number"
+              id="product-price"
+              name="product-price"
+              required
+              value={product.price}
+              onChange={(event) =>
+                setProduct({ ...product, price: Number(event.target.value) })
+              }
+            />
+          </div>
+
+          <div>
+            <label htmlFor="quantity-option">Määräyksikkö</label>
+            <select
+              id="quantity-option"
+              name="quantity-option"
+              value={product.quantityOptionId.toString()}
+              onChange={(event) =>
+                setProduct({
+                  ...product,
+                  quantityOptionId: Number(event.target.value)
+                })
+              }
+            >
+              <option value="1">pak</option>
+              <option value="2">kpl</option>
+              <option value="3">ltk</option>
+            </select>
           </div>
 
           <button type="submit">Lisää</button>

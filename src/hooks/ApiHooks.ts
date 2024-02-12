@@ -299,6 +299,23 @@ const useProducts = () => {
     }
   };
 
+  const postProduct = async (data: unknown) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+      const json = await fetchJson(`${apiUrl}/product`, options);
+      return json;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getSpotsByProductCode = async (code = ''): Promise<SpotProps[]> => {
     try {
       const options = {
@@ -319,7 +336,14 @@ const useProducts = () => {
     getProducts();
   }, []);
 
-  return { products, getProducts, getProduct, product, getSpotsByProductCode };
+  return {
+    products,
+    getProducts,
+    getProduct,
+    postProduct,
+    product,
+    getSpotsByProductCode
+  };
 };
 
 export { useLogin, useWarehouse, useProducts };
