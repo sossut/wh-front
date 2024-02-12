@@ -47,9 +47,12 @@ const PalletModal: React.FC<PalletModalProps> = ({
         console.log('palletId', id);
         const pallet = await getPallet(id);
         console.log('Fetched pallet', pallet);
+
         setProductIds(
           Array.isArray(pallet?.products)
-            ? pallet.products.map((product) => product.id)
+            ? pallet.products
+                .map((product) => product.id)
+                .filter((id): id is number => id !== undefined)
             : []
         );
         if (pallet?.products) {
@@ -218,7 +221,11 @@ const PalletModal: React.FC<PalletModalProps> = ({
                     <button
                       type="button"
                       className="pallet-product-delete-button"
-                      onClick={handleDelete(product.id)}
+                      onClick={() => {
+                        if (product.id !== undefined) {
+                          handleDelete(product.id);
+                        }
+                      }}
                     >
                       Poista
                     </button>
