@@ -6,6 +6,7 @@ import AddProductModal from './AddProductModal';
 
 const Products = () => {
   const [products, setProducts] = React.useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = React.useState(products);
   const [product, setProduct] = React.useState<Product | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
@@ -31,6 +32,9 @@ const Products = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  React.useEffect(() => {
+    setFilteredProducts(products);
+  }, [products]);
   console.log('aaa', products);
   return (
     <div className="products-body">
@@ -38,7 +42,17 @@ const Products = () => {
         <h1>Tuotteet</h1>
 
         <div>
-          <input></input>
+          <input
+            onChange={(event) => {
+              setFilteredProducts(
+                products.filter((product) =>
+                  product.code
+                    .toLowerCase()
+                    .includes(event.target.value.toLowerCase())
+                )
+              );
+            }}
+          ></input>
           <button>Hae</button>
         </div>
         <div>
@@ -58,8 +72,8 @@ const Products = () => {
             </tr>
           </thead>
           <tbody className="products-tbody">
-            {products &&
-              products.map((product) => {
+            {filteredProducts &&
+              filteredProducts.map((product) => {
                 return (
                   <tr key={product.id}>
                     <td>{product.code}</td>
@@ -88,7 +102,10 @@ const Products = () => {
         />
       )}
       {isAddModalOpen && (
-        <AddProductModal onClose={() => setIsAddModalOpen(false)} />
+        <AddProductModal
+          addProduct={(newProduct) => setProducts([...products, newProduct])}
+          onClose={() => setIsAddModalOpen(false)}
+        />
       )}
     </div>
   );

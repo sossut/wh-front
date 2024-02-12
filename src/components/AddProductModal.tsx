@@ -4,9 +4,13 @@ import { useProducts } from '../hooks/ApiHooks';
 
 export interface AddProductModalProps {
   onClose: () => void;
+  addProduct: (product: Product) => void;
 }
 
-const AddProductModal: React.FC<AddProductModalProps> = ({ onClose }) => {
+const AddProductModal: React.FC<AddProductModalProps> = ({
+  onClose,
+  addProduct
+}) => {
   const { postProduct } = useProducts();
   const hanldeClick = () => {
     onClose();
@@ -21,10 +25,14 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ onClose }) => {
     productCategoryId: 1,
     productSubCategoryId: 1
   });
-  const handleFormSubmit = (event: React.FormEvent) => {
+  const handleFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     console.log(product);
-    postProduct(product);
+    const pId = await postProduct(product);
+    product.id = pId.id;
+    if (pId.id !== undefined) {
+      addProduct(product);
+    }
   };
 
   return (
