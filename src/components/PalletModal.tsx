@@ -26,6 +26,7 @@ const PalletModal: React.FC<PalletModalProps> = ({
   const [products, setProducts] = useState<Product[]>([]);
 
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   console.log('Selected products at start', selectedProducts);
 
   const handleClick = () => {
@@ -42,6 +43,7 @@ const PalletModal: React.FC<PalletModalProps> = ({
         a.code.localeCompare(b.code)
       );
       setProducts(sortedProducts);
+      setFilteredProducts(sortedProducts);
 
       if (id) {
         console.log('palletId', id);
@@ -185,6 +187,14 @@ const PalletModal: React.FC<PalletModalProps> = ({
     event.preventDefault(); // Prevent the form from being submitted
   };
 
+  const searchProducts = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchValue = event.target.value.toLowerCase();
+    const filtered = products.filter((product) =>
+      product.code.toLowerCase().startsWith(searchValue)
+    );
+    setFilteredProducts(filtered);
+  };
+
   return (
     <div className="modal">
       <button className="close-button" onClick={handleClick}>
@@ -193,15 +203,24 @@ const PalletModal: React.FC<PalletModalProps> = ({
       <div className="modal-content">
         <h3>Lavan Tuotteet</h3>
         <form className="pallet-form" onSubmit={handleFormSubmit}>
-          <label htmlFor="products-select">Tuotteet</label>
-          <select id="products-select" name="products-select">
-            {Array.isArray(products) &&
-              products.map((product, index) => (
-                <option key={index} value={`${product.id}`}>
-                  {product.code}
-                </option>
-              ))}
-          </select>
+          <div>
+            <label htmlFor="product-search">Hae tuottetta</label>
+            <input
+              onChange={searchProducts}
+              type="text"
+              id="product-search"
+              name="product-search"
+            />
+            <label htmlFor="products-select">Tuotteet</label>
+            <select id="products-select" name="products-select">
+              {Array.isArray(filteredProducts) &&
+                filteredProducts.map((product, index) => (
+                  <option key={index} value={`${product.id}`}>
+                    {product.code}
+                  </option>
+                ))}
+            </select>
+          </div>
           <button
             type="button"
             className="add-product-button"

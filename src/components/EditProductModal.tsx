@@ -1,5 +1,7 @@
 import React from 'react';
 import { Product } from '../intefaces/Product';
+import { useProducts } from '../hooks/ApiHooks';
+import { QuantityOption } from '../intefaces/QuantityOption';
 
 export interface EditProductModalProps {
   onClose: () => void;
@@ -11,19 +13,37 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
   product
 }) => {
   console.log(product);
-  const [productStae, setProductState] = React.useState<Product>({
-    code: product?.code || '',
-    name: product?.name || '',
-    weight: product?.weight || 0,
-    quantity: product?.quantity || 0,
-    price: product?.price || 0,
-    quantityOptionId: product?.quantityOptionId || 1,
-    productCategoryId: product?.productCategoryId || 1,
-    productSubCategoryId: product?.productSubCategoryId || 1
-  });
+  console.log('EditProductModal rendered');
+  const { getQuantityOptions } = useProducts();
+  const [quantityOptions, setQuantityOptions] = React.useState<
+    QuantityOption[]
+  >([]);
+  const initialProductState = React.useMemo(
+    () => ({
+      code: product?.code || '',
+      name: product?.name || '',
+      weight: product?.weight || 0,
+      quantity: product?.quantity || 0,
+      price: product?.price || 0,
+      quantityOptionId: product?.quantityOptionId || 1,
+      productCategoryId: product?.productCategoryId || null,
+      productSubCategoryId: product?.productSubCategoryId || null
+    }),
+    [product]
+  );
+  const [productState, setProductState] =
+    React.useState<Product>(initialProductState);
   const hanldeClick = () => {
     onClose();
   };
+  React.useEffect(() => {
+    const fetchQuantityOptions = async () => {
+      const quantityOptions = await getQuantityOptions();
+      setQuantityOptions(quantityOptions);
+    };
+    fetchQuantityOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <div className="modal">
       <button className="close-button" onClick={hanldeClick}>
@@ -41,7 +61,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
               required
               value={product?.code}
               onChange={(event) =>
-                setProductState({ ...productStae, code: event.target.value })
+                setProductState({ ...productState, code: event.target.value })
               }
             />
           </div>
@@ -54,7 +74,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
               required
               value={product?.name}
               onChange={(event) =>
-                setProductState({ ...productStae, name: event.target.value })
+                setProductState({ ...productState, name: event.target.value })
               }
             />
           </div>
@@ -68,7 +88,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
               value={product?.weight}
               onChange={(event) =>
                 setProductState({
-                  ...productStae,
+                  ...productState,
                   weight: parseInt(event.target.value)
                 })
               }
@@ -84,7 +104,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
               value={product?.quantity}
               onChange={(event) =>
                 setProductState({
-                  ...productStae,
+                  ...productState,
                   quantity: parseInt(event.target.value)
                 })
               }
@@ -100,11 +120,31 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
               value={product?.price}
               onChange={(event) =>
                 setProductState({
-                  ...productStae,
+                  ...productState,
                   price: parseInt(event.target.value)
                 })
               }
             />
+          </div>
+          <div>
+            <label htmlFor="quantity-option">Määräyksikkö</label>
+            <select
+              id="quantity-option"
+              name="quantity-option"
+              value={product?.quantityOptionId.toString()}
+              onChange={(event) =>
+                setProductState({
+                  ...productState,
+                  quantityOptionId: parseInt(event.target.value)
+                })
+              }
+            >
+              {quantityOptions.map((option) => (
+                <option key={option.id} value={option.id.toString()}>
+                  {option.quantityOption}
+                </option>
+              ))}
+            </select>
           </div>
           <button type="submit">Tallenna</button>
         </form>

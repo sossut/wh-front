@@ -1,6 +1,7 @@
 import React from 'react';
 import { Product } from '../intefaces/Product';
 import { useProducts } from '../hooks/ApiHooks';
+import { QuantityOption } from '../intefaces/QuantityOption';
 
 export interface AddProductModalProps {
   onClose: () => void;
@@ -11,10 +12,13 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   onClose,
   addProduct
 }) => {
-  const { postProduct } = useProducts();
+  const { postProduct, getQuantityOptions } = useProducts();
   const hanldeClick = () => {
     onClose();
   };
+  const [quantityOptions, setQuantityOptions] = React.useState<
+    QuantityOption[]
+  >([]);
   const [product, setProduct] = React.useState<Product>({
     code: '',
     name: '',
@@ -34,7 +38,15 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       addProduct(product);
     }
   };
-
+  React.useEffect(() => {
+    const fetchQuantityOptions = async () => {
+      const quantityOptions = await getQuantityOptions();
+      console.log('quantityOptions', quantityOptions);
+      setQuantityOptions(quantityOptions);
+    };
+    fetchQuantityOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <div className="modal">
       <button className="close-button" onClick={hanldeClick}>
@@ -123,9 +135,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 })
               }
             >
-              <option value="1">pak</option>
-              <option value="2">kpl</option>
-              <option value="3">ltk</option>
+              {quantityOptions.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.quantityOption}
+                </option>
+              ))}
             </select>
           </div>
 

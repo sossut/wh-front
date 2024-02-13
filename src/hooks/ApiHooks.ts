@@ -5,6 +5,7 @@ import { apiUrl } from '../utils/variables';
 import { SpotProps } from '../components/Spot';
 import { RowProps } from '../components/Row';
 import { PalletProps } from '../components/Pallet';
+import { QuantityOption } from '../intefaces/QuantityOption';
 
 const fetchJson = async (url: string, options = {}) => {
   try {
@@ -332,6 +333,25 @@ const useProducts = () => {
     }
   };
 
+  const getQuantityOptions = async (): Promise<QuantityOption[]> => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const quantityOptions = await fetchJson(
+        `${apiUrl}/quantity-option`,
+        options
+      );
+      return quantityOptions;
+    } catch (error) {
+      console.log(error);
+      return {} as QuantityOption[];
+    }
+  };
+
   useEffect(() => {
     getProducts();
   }, []);
@@ -342,7 +362,8 @@ const useProducts = () => {
     getProduct,
     postProduct,
     product,
-    getSpotsByProductCode
+    getSpotsByProductCode,
+    getQuantityOptions
   };
 };
 

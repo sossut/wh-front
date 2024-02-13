@@ -8,7 +8,7 @@ export interface Product {
   quantity: number;
   price: number;
   quantityOptionId: number | QuantityOption;
-  productCategoryId: number;
-  productSubCategoryId: number;
+  productCategoryId: number | null;
+  productSubCategoryId: number | null;
   updatedAt?: Date;
 }

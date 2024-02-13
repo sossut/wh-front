@@ -22,6 +22,10 @@ const Products = () => {
     setIsAddModalOpen(true);
   };
 
+  const sortProducts = (products: Product[]) => {
+    return products.sort((a, b) => a.code.localeCompare(b.code));
+  };
+
   React.useEffect(() => {
     const fetchProducts = async () => {
       const products = await getProducts();
@@ -33,6 +37,7 @@ const Products = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   React.useEffect(() => {
+    sortProducts(products);
     setFilteredProducts(products);
   }, [products]);
   console.log('aaa', products);
@@ -47,16 +52,18 @@ const Products = () => {
               if (event.target.value === '') {
                 setFilteredProducts(products);
                 return;
-              } try {
-                
+              }
+              try {
                 setFilteredProducts(
                   products.filter((product) =>
                     product.code
                       .toLowerCase()
-                      .includes(event.target.value.toLowerCase())
+                      .startsWith(event.target.value.toLowerCase())
                   )
                 );
-              } catch (error) {console.log(error)}
+              } catch (error) {
+                console.log(error);
+              }
             }}
           ></input>
           <button>Hae</button>
@@ -78,7 +85,8 @@ const Products = () => {
             </tr>
           </thead>
           <tbody className="products-tbody">
-            {filteredProducts && filteredProducts.length > 0 &&
+            {filteredProducts &&
+              filteredProducts.length > 0 &&
               filteredProducts.map((product) => {
                 return (
                   <tr key={product.id}>
