@@ -44,13 +44,19 @@ const Products = () => {
         <div>
           <input
             onChange={(event) => {
-              setFilteredProducts(
-                products.filter((product) =>
-                  product.code
-                    .toLowerCase()
-                    .includes(event.target.value.toLowerCase())
-                )
-              );
+              if (event.target.value === '') {
+                setFilteredProducts(products);
+                return;
+              } try {
+                
+                setFilteredProducts(
+                  products.filter((product) =>
+                    product.code
+                      .toLowerCase()
+                      .includes(event.target.value.toLowerCase())
+                  )
+                );
+              } catch (error) {console.log(error)}
             }}
           ></input>
           <button>Hae</button>
@@ -72,7 +78,7 @@ const Products = () => {
             </tr>
           </thead>
           <tbody className="products-tbody">
-            {filteredProducts &&
+            {filteredProducts && filteredProducts.length > 0 &&
               filteredProducts.map((product) => {
                 return (
                   <tr key={product.id}>
