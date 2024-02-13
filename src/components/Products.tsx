@@ -80,7 +80,7 @@ const Products = () => {
               <th>Nimi</th>
               <th>Varastossa</th>
               <th>Hinta</th>
-              <th>Viimeisin päivitys</th>
+
               <th></th>
             </tr>
           </thead>
@@ -94,10 +94,7 @@ const Products = () => {
                     <td>{product.name}</td>
                     <td>{product.quantity}</td>
                     <td>{product.price}</td>
-                    <td>
-                      {product.updatedAt &&
-                        new Date(product.updatedAt).toLocaleDateString('FI-fi')}
-                    </td>
+
                     <td>
                       <button onClick={() => editProduct(product)}>
                         Muokkaa

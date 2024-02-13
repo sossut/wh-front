@@ -1,7 +1,8 @@
 import React from 'react';
+import OutDockets from '../components/OutDockets';
 
 const OutDocketsPage = () => {
-  return <div>Dockets</div>;
+  return <OutDockets />;
 };
 
 export default OutDocketsPage;

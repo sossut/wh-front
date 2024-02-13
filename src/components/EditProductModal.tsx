@@ -12,8 +12,6 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
   onClose,
   product
 }) => {
-  console.log(product);
-  console.log('EditProductModal rendered');
   const { getQuantityOptions } = useProducts();
   const [quantityOptions, setQuantityOptions] = React.useState<
     QuantityOption[]
@@ -149,6 +147,10 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
           <button type="submit">Tallenna</button>
         </form>
       </div>
+      <p>
+        {product?.updatedAt &&
+          new Date(product.updatedAt).toLocaleDateString('FI-fi')}
+      </p>
     </div>
   );
 };

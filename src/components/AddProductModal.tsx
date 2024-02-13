@@ -41,7 +41,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   React.useEffect(() => {
     const fetchQuantityOptions = async () => {
       const quantityOptions = await getQuantityOptions();
-      console.log('quantityOptions', quantityOptions);
+
       setQuantityOptions(quantityOptions);
     };
     fetchQuantityOptions();
