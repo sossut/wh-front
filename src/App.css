@@ -305,6 +305,10 @@ h1 {
   width: 75%;
   margin: 1rem 0;
 }
+.common-tbody td {
+  padding: 0 0.2rem;
+  text-align: center;
+}
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

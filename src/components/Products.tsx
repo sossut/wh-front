@@ -82,9 +82,10 @@ const Products = () => {
               <th>Hinta</th>
 
               <th></th>
+              <th></th>
             </tr>
           </thead>
-          <tbody className="products-tbody">
+          <tbody className="products-tbody common-tbody">
             {filteredProducts &&
               filteredProducts.length > 0 &&
               filteredProducts.map((product) => {
@@ -99,6 +100,9 @@ const Products = () => {
                       <button onClick={() => editProduct(product)}>
                         Muokkaa
                       </button>
+                    </td>
+                    <td>
+                      <button>Historia</button>
                     </td>
                   </tr>
                 );
