@@ -290,14 +290,14 @@ h1 {
   height: 100%;
   background-color: #242424;
 }
-.products-body {
+.common-body {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
 }
-.products-header {
+.common-header {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;

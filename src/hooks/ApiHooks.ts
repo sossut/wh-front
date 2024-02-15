@@ -6,6 +6,7 @@ import { SpotProps } from '../components/Spot';
 import { RowProps } from '../components/Row';
 import { PalletProps } from '../components/Pallet';
 import { QuantityOption } from '../intefaces/QuantityOption';
+import { OutDocket } from '../intefaces/OutDocket';
 
 const fetchJson = async (url: string, options = {}) => {
   try {
@@ -367,4 +368,83 @@ const useProducts = () => {
   };
 };
 
-export { useLogin, useWarehouse, useProducts };
+const useOutDockets = () => {
+  const [outDockets, setOutDockets] = useState<OutDocket[]>([]);
+  const [outDocket, setOutDocket] = useState<OutDocket>({} as OutDocket);
+  const getOutDockets = async () => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const outDockets = await fetchJson(`${apiUrl}/outdocket`, options);
+      setOutDockets(outDockets);
+      return outDockets;
+    } catch (error) {
+      console.error(error);
+      return {} as OutDocket[];
+    }
+  };
+
+  const getOutDocket = async (id = 0) => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const outDocket = await fetchJson(`${apiUrl}/outdocket/${id}`, options);
+      setOutDocket(outDocket);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const postOutDocket = async (data: unknown) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+      const json = await fetchJson(`${apiUrl}/outdocket`, options);
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const putOutDocket = async (id = 0, data: unknown) => {
+    try {
+      const options = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+      const json = await fetchJson(`${apiUrl}/outdocket/${id}`, options);
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return {
+    outDockets,
+    getOutDockets,
+    getOutDocket,
+    postOutDocket,
+    putOutDocket,
+    outDocket
+  };
+};
+
+export { useLogin, useWarehouse, useProducts, useOutDockets };

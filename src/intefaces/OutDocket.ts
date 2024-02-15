@@ -10,6 +10,7 @@ export interface OutDocket {
   updatedAt: Date;
   userId: number | User;
   clientId: number | Client;
+  client: Client;
   status: 'open' | 'closed';
   departureAt: Date | null;
   transportOptionId: number | TransportOption;
