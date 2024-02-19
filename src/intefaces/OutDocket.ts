@@ -14,6 +14,7 @@ export interface OutDocket {
   status: 'open' | 'closed';
   departureAt: Date | null;
   transportOptionId: number | TransportOption;
+  transportOption: TransportOption;
   filename: string;
   products?: OutDocketProduct[];
 }

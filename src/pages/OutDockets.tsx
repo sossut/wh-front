@@ -2,11 +2,15 @@ import React from 'react';
 import { useOutDockets } from '../hooks/ApiHooks';
 import { OutDocket } from '../intefaces/OutDocket';
 import { Client } from '../intefaces/Client';
+import FullOutDocketModal from '../components/FullOutDocketModal';
 
 const OutDockets = () => {
   const { getOutDockets } = useOutDockets();
   const [outDockets, setOutDockets] = React.useState<OutDocket[]>([]);
-
+  const [outDocket, setOutDocket] = React.useState<OutDocket | null>(null);
+  const [filteredOutDockets, setFilteredOutDockets] =
+    React.useState(outDockets);
+  const [isFullModalOpen, setIsFullModalOpen] = React.useState(false);
   React.useEffect(() => {
     const fetchOutDockets = async () => {
       const outDockets = await getOutDockets();
@@ -16,6 +20,22 @@ const OutDockets = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  React.useEffect(() => {
+    sortDockets(outDockets);
+    setFilteredOutDockets(outDockets);
+  }, [outDockets]);
+
+  const sortDockets = (dockets: OutDocket[]) => {
+    return dockets.sort((a, b) => a.docketNumber.localeCompare(b.docketNumber));
+  };
+
+  const fullOutDocket = (outDocket: OutDocket) => {
+    setIsFullModalOpen(true);
+    setOutDocket(outDocket);
+  };
+  const handleClose = () => {
+    setIsFullModalOpen(false);
+  };
   return (
     <div className="dockets-body common-body">
       <header className="dockets-header common-header">
@@ -28,24 +48,27 @@ const OutDockets = () => {
           <button>Lisää lähete</button>
         </div>
       </header>
-      <div>
-        <table className="dockets-table">
-          <thead className="dockets-thead">
+      <main>
+        <table className="dockets-table common-table">
+          <thead className="dockets-thead commont-thead">
             <tr>
               <th>Lähetenumero</th>
+              <th>Asiakas</th>
               <th>Luomispäivä</th>
               <th>Lähetyspäivä</th>
-              <th>Asiakas</th>
               <th>Toimitusosoite</th>
+              <th>Tila</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {outDockets &&
-              outDockets.map((outDocket) => {
+            {filteredOutDockets &&
+              filteredOutDockets.map((outDocket) => {
                 return (
                   <tr key={outDocket.id}>
                     <td>{outDocket.docketNumber}</td>
+                    <td>{(outDocket.client as Client).name}</td>
+                    <td>Tähän osoite</td>
                     <td>
                       {outDocket.createdAt
                         ? new Date(outDocket.createdAt).toLocaleDateString(
@@ -60,17 +83,24 @@ const OutDockets = () => {
                           )
                         : 'N/A'}
                     </td>
-                    <td>{(outDocket.client as Client).name}</td>
-                    <td>Tähän osoite</td>
+                    <td>{outDocket.status}</td>
                     <td>
-                      <button>Muokkaa</button>
+                      <button onClick={() => fullOutDocket(outDocket)}>
+                        Kerää
+                      </button>
                     </td>
                   </tr>
                 );
               })}
           </tbody>
         </table>
-      </div>
+      </main>
+      {isFullModalOpen && outDocket && (
+        <FullOutDocketModal
+          onClose={handleClose}
+          outDocket={outDocket}
+        ></FullOutDocketModal>
+      )}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { QuantityOption } from './QuantityOption';
 import { OutDocket } from './OutDocket';
 import { Product } from './Product';
 
@@ -7,4 +8,7 @@ export interface OutDocketProduct {
   productId: number | Product;
   orderedProductQuantity: number;
   deliveredProductQuantity: number;
+  code: string;
+  name: string;
+  quantityOption: QuantityOption;
 }
