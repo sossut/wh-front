@@ -11,6 +11,13 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
   onClose,
   outDocket
 }) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log('submit');
+  };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.value);
+  };
   console.log(outDocket);
   return (
     <div className="big-modal">
@@ -53,36 +60,47 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
         </div>
       </div>
       <div className="big-modal-content">
-        <table className="big-modal-table">
-          <thead className="big-modal-thead">
-            <tr>
-              <th>Tuotenumero</th>
-              <th>Tuote</th>
-              <th>Toimitettu Määrä</th>
-              <th>Tilattu määrä</th>
-              <th>Yksikkö</th>
-            </tr>
-          </thead>
-          <tbody>
-            {outDocket.products &&
-              outDocket.products.map((product) => {
-                console.log(
-                  'orderedProductQuantity',
-                  product.orderedProductQuantity
-                );
-                return (
-                  <tr key={product.id}>
-                    <td>{product.code}</td>
-                    <td>{product.name}</td>
-                    <td>{product.deliveredProductQuantity}</td>
-                    <td>{product.orderedProductQuantity}</td>
-                    <td>{product.quantityOption?.quantityOption}</td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
-        <button>Kerätty</button>
+        <form onSubmit={handleSubmit}>
+          <table className="big-modal-table">
+            <thead className="big-modal-thead">
+              <tr>
+                <th>Tuotenumero</th>
+                <th>Tuote</th>
+                <th>Toimitettu Määrä</th>
+                <th>Tilattu määrä</th>
+                <th>Yksikkö</th>
+                <th>Kerätty määrä</th>
+              </tr>
+            </thead>
+            <tbody>
+              {outDocket.products &&
+                outDocket.products.map((product) => {
+                  console.log(
+                    'orderedProductQuantity',
+                    product.orderedProductQuantity
+                  );
+                  return (
+                    <tr key={product.id}>
+                      <td>{product.code}</td>
+                      <td>{product.name}</td>
+                      <td>{product.deliveredProductQuantity}</td>
+                      <td>{product.orderedProductQuantity}</td>
+                      <td>{product.quantityOption?.quantityOption}</td>
+                      <td>
+                        <input
+                          min={0}
+                          max={product.orderedProductQuantity}
+                          onChange={handleChange}
+                          type="number"
+                        ></input>
+                      </td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+          <button>Lähetä</button>
+        </form>
       </div>
     </div>
   );
