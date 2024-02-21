@@ -82,6 +82,7 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
               })}
           </tbody>
         </table>
+        <button>Kerätty</button>
       </div>
     </div>
   );
