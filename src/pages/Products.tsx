@@ -3,6 +3,7 @@ import { Product } from '../intefaces/Product';
 import { useProducts } from '../hooks/ApiHooks';
 import EditProductModal from '../components/EditProductModal';
 import AddProductModal from '../components/AddProductModal';
+import ProductHistoryModal from '../components/ProductHistoryModal';
 
 const Products = () => {
   const [products, setProducts] = React.useState<Product[]>([]);
@@ -10,6 +11,7 @@ const Products = () => {
   const [product, setProduct] = React.useState<Product | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = React.useState(false);
   const { getProducts } = useProducts();
 
   const editProduct = (product: Product) => {
@@ -21,8 +23,20 @@ const Products = () => {
     setProduct(null);
     setIsAddModalOpen(true);
   };
+  
+  const historyProduct = (product: Product) => {
+    setProduct(product);
+    setIsHistoryModalOpen(true);
+  }
 
   const sortProducts = (products: Product[]) => {
+    if (!Array.isArray(products)) {
+      console.error('sortProducts was called with a non-array value:', products);
+      return [];
+    }
+    if (products.length === 0) {
+      return [];
+    }
     return products.sort((a, b) => a.code.localeCompare(b.code));
   };
 
@@ -102,7 +116,7 @@ const Products = () => {
                       </button>
                     </td>
                     <td>
-                      <button>Historia</button>
+                      <button onClick={() => historyProduct(product)}>Historia</button>
                     </td>
                   </tr>
                 );
@@ -122,6 +136,10 @@ const Products = () => {
           onClose={() => setIsAddModalOpen(false)}
         />
       )}
+      {isHistoryModalOpen && (
+        <ProductHistoryModal product={product} onClose={() => setIsHistoryModalOpen(false)}/>
+      )}
+        
     </div>
   );
 };
