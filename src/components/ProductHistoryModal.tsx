@@ -20,15 +20,14 @@ const ProductHistoryModal: React.FC<ProductHistoryModalProps> = ({onClose, produ
                         <th>Lähti/Saapui</th>
                         <th>Päivämäärä</th>
                         <th>Määrä</th>
+                        <th>Tilausnumero</th>
 
                     </tr>
                 </thead>
                 <tbody>
                     {history.map((h, i: number) => (
                         <tr key={i}>
-                            <td>{h.type}</td>
-                            <td>{h.date}</td>
-                            <td>{h.amount}</td>
+                            
                         </tr>
                     ))}
                 </tbody>
