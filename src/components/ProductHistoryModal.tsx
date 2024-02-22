@@ -21,7 +21,7 @@ const ProductHistoryModal: React.FC<ProductHistoryModalProps> = ({onClose, produ
                         <th>Päivämäärä</th>
                         <th>Määrä</th>
                         <th>Tilausnumero</th>
-
+    
                     </tr>
                 </thead>
                 <tbody>

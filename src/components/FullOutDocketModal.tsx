@@ -1,6 +1,7 @@
 import React from 'react';
 import { OutDocket } from '../intefaces/OutDocket';
 import { TransportOption } from '../intefaces/TransportOption';
+import { useOutDockets } from '../hooks/ApiHooks';
 
 export interface FullOutDocketModalProps {
   onClose: () => void;
@@ -11,12 +12,34 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
   onClose,
   outDocket
 }) => {
+  const [collectedQuantities, setCollectedQuantities] = React.useState<{[key: number]: number}>({});
+  const {postSentOutDocket} = useOutDockets();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('submit');
+    console.log(collectedQuantities);
   };
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  React.useEffect(() => {
+    const initialQuantities = outDocket?.products?.reduce((acc, product) => {
+      if (!product || product.id === undefined) {
+        return acc;
+      }
+      return {
+        ...acc,
+        [product.id]: product.deliveredProductQuantity
+      };
+    }, {});
+    if (!initialQuantities) {
+      return;
+    }
+    setCollectedQuantities(initialQuantities);
+  }, [outDocket.products]);
+  const handleChange = (productId: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log(e.target.value);
+    setCollectedQuantities({
+      ...collectedQuantities,
+      [productId]: parseInt(e.target.value)
+    });
   };
   console.log(outDocket);
   return (
@@ -79,6 +102,9 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
                     'orderedProductQuantity',
                     product.orderedProductQuantity
                   );
+                  if (!product || product.id === undefined) {
+                    return null;
+                  }
                   return (
                     <tr key={product.id}>
                       <td>{product.code}</td>
@@ -90,7 +116,7 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
                         <input
                           min={0}
                           max={product.orderedProductQuantity}
-                          onChange={handleChange}
+                          onChange={handleChange(product.id)}
                           type="number"
                         ></input>
                       </td>

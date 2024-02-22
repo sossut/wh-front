@@ -437,13 +437,33 @@ const useOutDockets = () => {
     }
   };
 
+  const postSentOutDocket = async (id = 0) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const json = await fetchJson(
+        `${apiUrl}/outdocket/${id}/sent`,
+        options
+      );
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return {
     outDockets,
     getOutDockets,
     getOutDocket,
     postOutDocket,
     putOutDocket,
-    outDocket
+    outDocket,
+    postSentOutDocket
   };
 };
 
