@@ -12,12 +12,38 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
   onClose,
   outDocket
 }) => {
-  const [collectedQuantities, setCollectedQuantities] = React.useState<{[key: number]: number}>({});
-  const {postSentOutDocket} = useOutDockets();
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [collectedQuantities, setCollectedQuantities] = React.useState<{
+    [key: number]: number;
+  }>({});
+  const [parcelQuantity, setParcelQuantity] = React.useState<number>(0);
+  const [transportOptions, setTransportOptions] = React.useState<
+    TransportOption[]
+  >([]);
+  const [departureAt, setDepartureAt] = React.useState<Date | null>(
+    outDocket.departureAt ? new Date(outDocket.departureAt) : null
+  );
+  const [transportOption, setTransportOption] = React.useState<number>(
+    outDocket.transportOptionId as number
+  );
+  const { postSentOutDocket, getTransportOptions } = useOutDockets();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('submit');
     console.log(collectedQuantities);
+    const data = {
+      docketId: outDocket.id,
+      products: Object.keys(collectedQuantities).map((key) => {
+        return {
+          productId: parseInt(key),
+          deliveredProductQuantity: collectedQuantities[parseInt(key)]
+        };
+      }),
+      parcels: parcelQuantity,
+      transportOptionId: transportOption,
+      departureAt: departureAt
+    };
+    console.log(data);
+    await postSentOutDocket(data);
   };
   React.useEffect(() => {
     const initialQuantities = outDocket?.products?.reduce((acc, product) => {
@@ -34,14 +60,49 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
     }
     setCollectedQuantities(initialQuantities);
   }, [outDocket.products]);
-  const handleChange = (productId: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const transportOptions = await getTransportOptions();
+        setTransportOptions(transportOptions);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleQuantityChange =
+    (productId: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      console.log(e.target.value);
+      setCollectedQuantities({
+        ...collectedQuantities,
+        [productId]: parseInt(e.target.value)
+      });
+      console.log(collectedQuantities);
+    };
+  const handleParcelQuantityChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     console.log(e.target.value);
-    setCollectedQuantities({
-      ...collectedQuantities,
-      [productId]: parseInt(e.target.value)
-    });
+    setParcelQuantity(parseInt(e.target.value));
+    if (e.target.value === '') {
+      setParcelQuantity(0);
+    }
+    if (parseInt(e.target.value) < 0) {
+      setParcelQuantity(0);
+    }
   };
-  console.log(outDocket);
+  const handleTransportChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log(e.target.value);
+    setTransportOption(parseInt(e.target.value));
+  };
+
+  const handleDepartureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.value);
+    setDepartureAt(new Date(e.target.value));
+  };
   return (
     <div className="big-modal">
       <button className="close-button" onClick={onClose}>
@@ -98,10 +159,6 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
             <tbody>
               {outDocket.products &&
                 outDocket.products.map((product) => {
-                  console.log(
-                    'orderedProductQuantity',
-                    product.orderedProductQuantity
-                  );
                   if (!product || product.id === undefined) {
                     return null;
                   }
@@ -116,7 +173,7 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
                         <input
                           min={0}
                           max={product.orderedProductQuantity}
-                          onChange={handleChange(product.id)}
+                          onChange={handleQuantityChange(product.id)}
                           type="number"
                         ></input>
                       </td>
@@ -125,6 +182,29 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
                 })}
             </tbody>
           </table>
+          <select onChange={handleTransportChange}>
+            {transportOptions.map((option) => {
+              return (
+                <option
+                  key={option.id}
+                  selected={option.id === transportOption}
+                  value={option.id}
+                >
+                  {option.transportOption}
+                </option>
+              );
+            })}
+          </select>
+          <input
+            onChange={handleParcelQuantityChange}
+            type="number"
+            placeholder="Pakettien määrä"
+          ></input>
+          <input
+            type="date"
+            placeholder="Toimituspäivä"
+            onChange={handleDepartureChange}
+          ></input>
           <button>Lähetä</button>
         </form>
       </div>

@@ -437,22 +437,40 @@ const useOutDockets = () => {
     }
   };
 
-  const postSentOutDocket = async (id = 0) => {
+  const postSentOutDocket = async (data: unknown) => {
     try {
       const options = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
+        },
+        body: JSON.stringify(data)
       };
-      const json = await fetchJson(
-        `${apiUrl}/outdocket/${id}/sent`,
-        options
-      );
+      console.log(data);
+      const json = await fetchJson(`${apiUrl}/sent-outdocket`, options);
       return json;
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const getTransportOptions = async () => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const transportOptions = await fetchJson(
+        `${apiUrl}/transport-option`,
+        options
+      );
+      return transportOptions;
+    } catch (error) {
+      console.error(error);
+      return {} as QuantityOption[];
     }
   };
 
@@ -463,7 +481,8 @@ const useOutDockets = () => {
     postOutDocket,
     putOutDocket,
     outDocket,
-    postSentOutDocket
+    postSentOutDocket,
+    getTransportOptions
   };
 };
 
