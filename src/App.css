@@ -285,6 +285,10 @@ h1 {
   flex-direction: column;
 }
 
+.modal-table {
+  color: black;
+}
+
 .change-spot-form {
   display: flex;
   flex-direction: column;

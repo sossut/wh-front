@@ -31,6 +31,10 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const updateProduct = (id: number, value: number) => {
+    console.log(id, value);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('submit');
@@ -113,6 +117,37 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
           <div>
             <label htmlFor="file">Lisää tiedosto</label>
             <input type="file" id="file"></input>
+          </div>
+          <div>
+            {outDocket.products && (
+              <table className="modal-table">
+                <thead>
+                  <tr>
+                    <th>Tuotenumero</th>
+                    <th>Tuote</th>
+                    <th>Toimitettu Määrä</th>
+                    <th>Tilattu määrä</th>
+                    <th>Yksikkö</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {outDocket.products.map((product) => {
+                    if (!product || product.id === undefined) {
+                      return null;
+                    }
+                    return (
+                      <tr key={product.id}>
+                        <td>{product.code}</td>
+                        <td>{product.name}</td>
+                        <td>{product.deliveredProductQuantity}</td>
+                        <td>{product.orderedProductQuantity}</td>
+                        <td>{product.quantityOption?.quantityOption}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
           </div>
           <button type="submit">Tallenna</button>
         </form>
