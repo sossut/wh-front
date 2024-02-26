@@ -16,12 +16,12 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
   stateChanger,
   onClose
 }) => {
-  console.log('outDocket', outDocket);
   const { getTransportOptions, putOutDocket } = useOutDockets();
   const [transportOptions, setTransportOptions] = React.useState([]);
   const [outDocketState, setOutDocketState] =
     React.useState<OutDocket>(outDocket);
   const [file, setFile] = React.useState<File | null>(null);
+  console.log('outDocket', outDocketState);
   React.useEffect(() => {
     (async () => {
       try {
@@ -34,10 +34,6 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const updateProduct = (id: number, value: number) => {
-    console.log(id, value);
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('submit');
@@ -46,7 +42,8 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
       clientId: outDocketState.client.id,
       departureAt: outDocketState.departureAt,
       transportOptionId: outDocketState.transportOptionId,
-      products: outDocketState.products
+      products: outDocketState.products,
+      filename: file
     };
     console.log(data);
     const updatedDocket = await putOutDocket(outDocket.id, data);
@@ -62,8 +59,32 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
       onClose();
     }
   };
+
+  const addProduct = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    setOutDocketState({
+      ...outDocketState,
+      products: [
+        ...(outDocketState.products ?? []),
+        {
+          code: '',
+          name: '',
+          orderedProductQuantity: 0,
+          deliveredProductQuantity: 0,
+          quantityOption: {
+            id: 1,
+            quantityOption: 'pak'
+          },
+          outDocketId: outDocketState.id,
+          productId: 1
+        }
+      ]
+    });
+    console.log(outDocketState);
+  };
+
   return (
-    <div className="modal">
+    <div className="big-modal">
       <button className="close-button" onClick={onClose}>
         Sulje
       </button>
@@ -169,7 +190,7 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {outDocket.products.map((product) => {
+                  {outDocketState?.products?.map((product) => {
                     if (!product || product.id === undefined) {
                       return null;
                     }
@@ -177,18 +198,66 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
                       <tr key={product.id}>
                         <td>{product.code}</td>
                         <td>{product.name}</td>
-                        <td>{product.deliveredProductQuantity}</td>
-                        <td>{product.orderedProductQuantity}</td>
+                        <td>
+                          <input
+                            min={0}
+                            max={product.orderedProductQuantity}
+                            value={product.deliveredProductQuantity ?? 0}
+                            onChange={(e) => {
+                              setOutDocketState({
+                                ...outDocketState,
+                                products: outDocketState?.products?.map((p) => {
+                                  if (p.id === product.id) {
+                                    return {
+                                      ...p,
+                                      deliveredProductQuantity: Number(
+                                        e.target.value
+                                      )
+                                    };
+                                  }
+                                  return p;
+                                })
+                              });
+                            }}
+                            type="number"
+                          ></input>
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            value={product.orderedProductQuantity}
+                            min={0}
+                            onChange={(e) => {
+                              setOutDocketState({
+                                ...outDocketState,
+                                products: outDocketState?.products?.map((p) => {
+                                  if (p.id === product.id) {
+                                    return {
+                                      ...p,
+                                      orderedProductQuantity: Number(
+                                        e.target.value
+                                      )
+                                    };
+                                  }
+                                  return p;
+                                })
+                              });
+                            }}
+                          ></input>
+                        </td>
                         <td>{product.quantityOption?.quantityOption}</td>
-                        {/* <td>
+                        <td>
                           <button>Poista</button>
-                        </td> */}
+                        </td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
             )}
+            <button type="button" onClick={addProduct}>
+              Lisää tuote
+            </button>
           </div>
           <button type="submit">Tallenna</button>
         </form>
