@@ -6,11 +6,15 @@ import { useOutDockets } from '../hooks/ApiHooks';
 export interface FullOutDocketModalProps {
   onClose: () => void;
   outDocket: OutDocket;
+  stateChanger: (
+    updateFunction: (prevDockets: OutDocket[]) => OutDocket[]
+  ) => void;
 }
 
 const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
   onClose,
-  outDocket
+  outDocket,
+  stateChanger
 }) => {
   const [collectedQuantities, setCollectedQuantities] = React.useState<{
     [key: number]: number;
@@ -43,7 +47,31 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
       departureAt: departureAt
     };
     console.log(data);
-    await postSentOutDocket(data);
+    const sod = await postSentOutDocket(data);
+
+    if (sod) {
+      stateChanger((prevDockets) => {
+        return prevDockets.map((docket) => {
+          const newDocket = { ...docket };
+          newDocket.products = docket.products?.map((product) => {
+            for (const key in collectedQuantities) {
+              if (product.id === Number(key)) {
+                return {
+                  ...product,
+                  deliveredProductQuantity:
+                    (product.deliveredProductQuantity || 0) +
+                    collectedQuantities[key]
+                };
+              }
+            }
+            // Always return a product, even if it wasn't updated
+            return product;
+          });
+          return newDocket;
+        });
+      });
+      onClose();
+    }
   };
   React.useEffect(() => {
     const initialQuantities = outDocket?.products?.reduce((acc, product) => {
@@ -170,12 +198,16 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
                       <td>{product.orderedProductQuantity}</td>
                       <td>{product.quantityOption?.quantityOption}</td>
                       <td>
-                        <input
-                          min={0}
-                          max={product.orderedProductQuantity}
-                          onChange={handleQuantityChange(product.id)}
-                          type="number"
-                        ></input>
+                        {(product.orderedProductQuantity !=
+                          product.deliveredProductQuantity && (
+                          <input
+                            min={0}
+                            max={product.orderedProductQuantity}
+                            onChange={handleQuantityChange(product.id)}
+                            type="number"
+                          ></input>
+                        )) ||
+                          'täysimääräinen'}
                       </td>
                     </tr>
                   );

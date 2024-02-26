@@ -3,6 +3,7 @@ import { useOutDockets } from '../hooks/ApiHooks';
 import { OutDocket } from '../intefaces/OutDocket';
 import { Client } from '../intefaces/Client';
 import FullOutDocketModal from '../components/FullOutDocketModal';
+import EditOutDocket from '../components/EditOutDocket';
 
 const OutDockets = () => {
   const { getOutDockets } = useOutDockets();
@@ -11,6 +12,7 @@ const OutDockets = () => {
   const [filteredOutDockets, setFilteredOutDockets] =
     React.useState(outDockets);
   const [isFullModalOpen, setIsFullModalOpen] = React.useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   React.useEffect(() => {
     const fetchOutDockets = async () => {
       const outDockets = await getOutDockets();
@@ -29,6 +31,11 @@ const OutDockets = () => {
     return dockets.sort((a, b) => a.docketNumber.localeCompare(b.docketNumber));
   };
 
+  const editOutDocket = (outDocket: OutDocket) => {
+    setOutDocket(outDocket);
+    setIsEditModalOpen(true);
+  };
+
   const fullOutDocket = (outDocket: OutDocket) => {
     setIsFullModalOpen(true);
     setOutDocket(outDocket);
@@ -36,10 +43,16 @@ const OutDockets = () => {
   const handleClose = () => {
     setIsFullModalOpen(false);
   };
+
+  const handleState = (
+    updateFunction: (prevDockets: OutDocket[]) => OutDocket[]
+  ) => {
+    setOutDockets(updateFunction);
+  };
   return (
     <div className="dockets-body common-body">
       <header className="dockets-header common-header">
-        <h1>Lähteneet</h1>
+        <h1>Lähetteet</h1>
         <div>
           <input type="text" placeholder="Hae"></input>
           <button>Hae</button>
@@ -54,10 +67,11 @@ const OutDockets = () => {
             <tr>
               <th>Lähetenumero</th>
               <th>Asiakas</th>
+              <th>Toimitusosoite</th>
               <th>Luomispäivä</th>
               <th>Lähetyspäivä</th>
-              <th>Toimitusosoite</th>
               <th>Tila</th>
+              <th></th>
               <th></th>
             </tr>
           </thead>
@@ -89,6 +103,11 @@ const OutDockets = () => {
                         Kerää
                       </button>
                     </td>
+                    <td>
+                      <button onClick={() => editOutDocket(outDocket)}>
+                        Muokkaa
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
@@ -99,7 +118,15 @@ const OutDockets = () => {
         <FullOutDocketModal
           onClose={handleClose}
           outDocket={outDocket}
+          stateChanger={handleState}
         ></FullOutDocketModal>
+      )}
+      {isEditModalOpen && outDocket && (
+        <EditOutDocket
+          outDocket={outDocket}
+          stateChanger={handleState}
+          onClose={() => setIsEditModalOpen(false)}
+        ></EditOutDocket>
       )}
     </div>
   );
