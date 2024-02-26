@@ -19,6 +19,9 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
   console.log('outDocket', outDocket);
   const { getTransportOptions, putOutDocket } = useOutDockets();
   const [transportOptions, setTransportOptions] = React.useState([]);
+  const [outDocketState, setOutDocketState] =
+    React.useState<OutDocket>(outDocket);
+  const [file, setFile] = React.useState<File | null>(null);
   React.useEffect(() => {
     (async () => {
       try {
@@ -39,10 +42,11 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
     e.preventDefault();
     console.log('submit');
     const data = {
-      docketNumber: outDocket.docketNumber,
-      clientId: outDocket.client.id,
-      departureAt: outDocket.departureAt,
-      transportOptionId: outDocket.transportOptionId
+      docketNumber: outDocketState.docketNumber,
+      clientId: outDocketState.client.id,
+      departureAt: outDocketState.departureAt,
+      transportOptionId: outDocketState.transportOptionId,
+      products: outDocketState.products
     };
     console.log(data);
     const updatedDocket = await putOutDocket(outDocket.id, data);
@@ -73,16 +77,29 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
             <input
               type="text"
               id="docketNumber"
-              value={outDocket.docketNumber}
-              onChange={() => {}}
+              value={outDocketState.docketNumber}
+              onChange={(e) => {
+                setOutDocketState({
+                  ...outDocketState,
+                  docketNumber: e.target.value
+                });
+              }}
             ></input>
           </div>
           <div>
             <label htmlFor="client">Asiakas</label>
             <select
               id="client"
-              value={outDocket.client.id.toString()}
-              onChange={() => {}}
+              value={outDocketState.client.id.toString()}
+              onChange={(e) => {
+                setOutDocketState({
+                  ...outDocketState,
+                  client: {
+                    id: Number(e.target.value),
+                    name: String(e.target.options[e.target.selectedIndex].text)
+                  }
+                });
+              }}
             >
               <option value="1">Testiasiakas</option>
             </select>
@@ -92,20 +109,32 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
             <input
               type="date"
               value={
-                outDocket.departureAt
-                  ? new Date(outDocket.departureAt).toISOString().slice(0, 10)
+                outDocketState.departureAt
+                  ? new Date(outDocketState.departureAt)
+                      .toISOString()
+                      .slice(0, 10)
                   : ''
               }
               id="departureAt"
-              onChange={() => {}}
+              onChange={(e) => {
+                setOutDocketState({
+                  ...outDocketState,
+                  departureAt: new Date(e.target.value)
+                });
+              }}
             ></input>
           </div>
           <div>
             <label htmlFor="transportOption">Kuljetusmuoto</label>
             <select
               id="transportOption"
-              value={outDocket.transportOptionId.toString()}
-              onChange={() => {}}
+              value={outDocketState.transportOptionId.toString()}
+              onChange={(e) => {
+                setOutDocketState({
+                  ...outDocketState,
+                  transportOptionId: Number(e.target.value)
+                });
+              }}
             >
               {transportOptions.map((option: TransportOption) => (
                 <option key={option.id} value={option.id}>
@@ -116,7 +145,15 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
           </div>
           <div>
             <label htmlFor="file">Lisää tiedosto</label>
-            <input type="file" id="file"></input>
+            <input
+              type="file"
+              id="file"
+              onChange={(e) => {
+                if (e.target.files) {
+                  setFile(e.target.files[0]);
+                }
+              }}
+            ></input>
           </div>
           <div>
             {outDocket.products && (
@@ -128,6 +165,7 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
                     <th>Toimitettu Määrä</th>
                     <th>Tilattu määrä</th>
                     <th>Yksikkö</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -142,6 +180,9 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
                         <td>{product.deliveredProductQuantity}</td>
                         <td>{product.orderedProductQuantity}</td>
                         <td>{product.quantityOption?.quantityOption}</td>
+                        {/* <td>
+                          <button>Poista</button>
+                        </td> */}
                       </tr>
                     );
                   })}
