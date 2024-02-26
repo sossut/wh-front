@@ -1,7 +1,8 @@
 import React from 'react';
 import { OutDocket } from '../intefaces/OutDocket';
-import { useOutDockets } from '../hooks/ApiHooks';
+import { useOutDockets, useProducts } from '../hooks/ApiHooks';
 import { TransportOption } from '../intefaces/TransportOption';
+import { Product } from '../intefaces/Product';
 
 export interface EditOutDocketProps {
   outDocket: OutDocket;
@@ -17,16 +18,21 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
   onClose
 }) => {
   const { getTransportOptions, putOutDocket } = useOutDockets();
+  const { getProducts } = useProducts();
   const [transportOptions, setTransportOptions] = React.useState([]);
+  const [products, setProducts] = React.useState<Product[]>([]);
   const [outDocketState, setOutDocketState] =
     React.useState<OutDocket>(outDocket);
   const [file, setFile] = React.useState<File | null>(null);
+  const [isAddingProduct, setIsAddingProduct] = React.useState(false);
   console.log('outDocket', outDocketState);
   React.useEffect(() => {
     (async () => {
       try {
         const transportOptions = await getTransportOptions();
         setTransportOptions(transportOptions);
+        const products = await getProducts();
+        setProducts(products);
       } catch (e) {
         console.error(e);
       }
@@ -62,25 +68,46 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
 
   const addProduct = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
+    setIsAddingProduct(true);
+  };
+
+  const handleAddProduct = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const target = e.target as typeof e.target & {
+      code: { value: string };
+      name: { value: string };
+      orderedProductQuantity: { value: number };
+      deliveredProductQuantity: { value: number };
+      quantityOption: { value: number };
+    };
+    const code = target.code.value;
+    const name = target.name.value;
+    const orderedProductQuantity = target.orderedProductQuantity.value;
+    const deliveredProductQuantity = target.deliveredProductQuantity.value;
+    const quantityOption = target.quantityOption.value;
+
+    // Add the new product to the state
     setOutDocketState({
       ...outDocketState,
       products: [
         ...(outDocketState.products ?? []),
         {
-          code: '',
-          name: '',
-          orderedProductQuantity: 0,
-          deliveredProductQuantity: 0,
+          code,
+          name,
+          orderedProductQuantity,
+          deliveredProductQuantity,
           quantityOption: {
-            id: 1,
-            quantityOption: 'pak'
+            id: quantityOption,
+            quantityOption: 'pak' // Replace this with the actual quantity option
           },
           outDocketId: outDocketState.id,
-          productId: 1
+          productId: 1 // Replace this with the actual product ID
         }
       ]
     });
-    console.log(outDocketState);
+
+    // Hide the form
+    setIsAddingProduct(false);
   };
 
   return (
@@ -261,6 +288,32 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
           </div>
           <button type="submit">Tallenna</button>
         </form>
+        {isAddingProduct && (
+          <div>
+            <h2>Lisää uusi tuote</h2>
+            <form onSubmit={handleAddProduct}>
+              <select>
+                {products.map((product) => {
+                  return (
+                    <option key={product.id} value={product.id}>
+                      {product.code} - {product.name}
+                    </option>
+                  );
+                })}
+              </select>
+              <label>
+                Tilattu määrä:
+                <input type="number" name="orderedProductQuantity" />
+              </label>
+              <label>
+                Toimitettu määrä:
+                <input type="number" name="deliveredProductQuantity" />
+              </label>
+
+              <input type="submit" value="Lisää tuote" />
+            </form>
+          </div>
+        )}
       </div>
     </div>
   );
