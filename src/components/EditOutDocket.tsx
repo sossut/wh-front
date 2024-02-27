@@ -73,23 +73,23 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
 
   const handleAddProduct = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const target = e.target as typeof e.target & {
-      dataset: { 
+    const form = e.target as HTMLFormElement;
+    const selectElement = form.querySelector('select') as HTMLSelectElement;
+    const selectedOption = selectElement
+      .selectedOptions[0] as HTMLOptionElement & {
+      dataset: {
         code: string;
-        name: string
+        name: string;
+        qoption: string;
       };
-      productId: {value: string}
-      name: { value: string };
-      orderedProductQuantity: { value: number };
-      deliveredProductQuantity: { value: number };
-      quantityOption: { value: number };
     };
-    const id = target.productId.value;
-    const code = target.dataset.code;
-    const name = target.dataset.name;
-    const orderedProductQuantity = target.orderedProductQuantity.value;
-    const deliveredProductQuantity = target.deliveredProductQuantity.value;
-    const quantityOption = target.quantityOption.value;
+
+    const id = selectElement.value;
+    const code = selectedOption.dataset.code;
+    const name = selectedOption.dataset.name;
+    const orderedProductQuantity = form.orderedProductQuantity.value;
+    const deliveredProductQuantity = form.deliveredProductQuantity.value;
+    const quantityOption = selectedOption.dataset.qoption;
 
     // Add the new product to the state
     setOutDocketState({
@@ -97,16 +97,18 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
       products: [
         ...(outDocketState.products ?? []),
         {
+          id: parseInt(id),
           code,
           name,
           orderedProductQuantity,
           deliveredProductQuantity,
           quantityOption: {
-            id: quantityOption,
+            id: parseInt(quantityOption),
             quantityOption: 'pak' // Replace this with the actual quantity option
           },
+
           outDocketId: outDocketState.id,
-          productId: parseInt(id) 
+          productId: parseInt(id)
         }
       ]
     });
@@ -300,7 +302,13 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
               <select>
                 {products.map((product) => {
                   return (
-                    <option key={product.id} value={product.id} data-code={product.code} data-name={product.name}>
+                    <option
+                      key={product.id}
+                      value={product.id}
+                      data-code={product.code}
+                      data-name={product.name}
+                      data-qoption={product.quantityOptionId}
+                    >
                       {product.code} - {product.name}
                     </option>
                   );
