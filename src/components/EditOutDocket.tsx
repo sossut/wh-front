@@ -74,14 +74,19 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
   const handleAddProduct = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const target = e.target as typeof e.target & {
-      code: { value: string };
+      dataset: { 
+        code: string;
+        name: string
+      };
+      productId: {value: string}
       name: { value: string };
       orderedProductQuantity: { value: number };
       deliveredProductQuantity: { value: number };
       quantityOption: { value: number };
     };
-    const code = target.code.value;
-    const name = target.name.value;
+    const id = target.productId.value;
+    const code = target.dataset.code;
+    const name = target.dataset.name;
     const orderedProductQuantity = target.orderedProductQuantity.value;
     const deliveredProductQuantity = target.deliveredProductQuantity.value;
     const quantityOption = target.quantityOption.value;
@@ -101,7 +106,7 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
             quantityOption: 'pak' // Replace this with the actual quantity option
           },
           outDocketId: outDocketState.id,
-          productId: 1 // Replace this with the actual product ID
+          productId: parseInt(id) 
         }
       ]
     });
@@ -295,7 +300,7 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
               <select>
                 {products.map((product) => {
                   return (
-                    <option key={product.id} value={product.id}>
+                    <option key={product.id} value={product.id} data-code={product.code} data-name={product.name}>
                       {product.code} - {product.name}
                     </option>
                   );
