@@ -53,6 +53,7 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
     };
     console.log(data);
     const updatedDocket = await putOutDocket(outDocket.id, data);
+    console.log(updatedDocket);
     if (updatedDocket) {
       stateChanger((prevDockets) => {
         return prevDockets.map((docket) => {
