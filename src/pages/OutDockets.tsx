@@ -28,6 +28,13 @@ const OutDockets = () => {
   }, [outDockets]);
 
   const sortDockets = (dockets: OutDocket[]) => {
+    if (!Array.isArray(dockets)) {
+      console.error(
+        'sortDockets was called with a non-array value:',
+        dockets
+      );
+      return [];
+    }
     return dockets.sort((a, b) => a.docketNumber.localeCompare(b.docketNumber));
   };
 
@@ -76,7 +83,9 @@ const OutDockets = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredOutDockets &&
+            {
+            Array.isArray(filteredOutDockets) &&
+            filteredOutDockets &&
               filteredOutDockets.map((outDocket) => {
                 return (
                   <tr key={outDocket.id}>
