@@ -4,6 +4,7 @@ import { OutDocket } from '../intefaces/OutDocket';
 import { Client } from '../intefaces/Client';
 import FullOutDocketModal from '../components/FullOutDocketModal';
 import EditOutDocket from '../components/EditOutDocket';
+import AddOutDocketModal from '../components/AddOutDocketModal';
 
 const OutDockets = () => {
   const { getOutDockets } = useOutDockets();
@@ -13,6 +14,7 @@ const OutDockets = () => {
     React.useState(outDockets);
   const [isFullModalOpen, setIsFullModalOpen] = React.useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
   React.useEffect(() => {
     const fetchOutDockets = async () => {
       const outDockets = await getOutDockets();
@@ -51,6 +53,12 @@ const OutDockets = () => {
     setIsFullModalOpen(false);
   };
 
+  const handleAdd = () => {
+    
+    setIsAddModalOpen(true);
+    console.log('add')
+  };
+
   const handleState = (
     updateFunction: (prevDockets: OutDocket[]) => OutDocket[]
   ) => {
@@ -65,7 +73,7 @@ const OutDockets = () => {
           <button>Hae</button>
         </div>
         <div>
-          <button>Lisää lähete</button>
+          <button onClick={() => {handleAdd}}>Lisää lähete</button>
         </div>
       </header>
       <main>
@@ -136,6 +144,12 @@ const OutDockets = () => {
           stateChanger={handleState}
           onClose={() => setIsEditModalOpen(false)}
         ></EditOutDocket>
+      )}
+      {isAddModalOpen && (
+        <AddOutDocketModal
+          stateChanger={handleState}
+          onClose={() => setIsAddModalOpen(false)}
+          />
       )}
     </div>
   );
