@@ -262,6 +262,7 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
                             min={0}
                             max={product.orderedProductQuantity}
                             value={product.deliveredProductQuantity ?? 0}
+                            disabled
                             onChange={(e) => {
                               setOutDocketState({
                                 ...outDocketState,
@@ -345,7 +346,7 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
               </label>
               <label>
                 Toimitettu määrä:
-                <input type="number" name="deliveredProductQuantity" />
+                <input type="number" disabled name="deliveredProductQuantity" />
               </label>
 
               <input type="submit" value="Lisää tuote" />

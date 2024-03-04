@@ -39,7 +39,6 @@ const ProductHistoryModal: React.FC<ProductHistoryModalProps> = ({
         <table>
           <thead>
             <tr>
-              <th>Lähti/Saapui</th>
               <th>Päivämäärä</th>
               <th>Määrä</th>
               <th>Tilausnumero</th>
@@ -48,9 +47,16 @@ const ProductHistoryModal: React.FC<ProductHistoryModalProps> = ({
           <tbody>
             {history.map((history) => (
               <tr key={history.id}>
-                <td>{history.productId}</td>
-                <td></td>
+                <td>
+                  {new Date(history.createdAt).toLocaleDateString('FI-fi')}
+                </td>
                 <td>{history.quantity}</td>
+                {history.outDocketNumber || history.inDocketNumber ? (
+                  <td>{history.outDocketNumber || history.inDocketNumber}</td>
+                ) : (
+                  <td></td>
+                )}
+
                 <td></td>
               </tr>
             ))}

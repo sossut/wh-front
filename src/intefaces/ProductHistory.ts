@@ -9,4 +9,6 @@ export interface ProductHistory {
   outDocketId?: number | OutDocket;
   inDocketId?: number; // | InDocket;
   manual?: 'yes' | 'no';
+  outDocketNumber?: string;
+  inDocketNumber?: string;
 }

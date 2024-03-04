@@ -44,7 +44,7 @@ const WarehouseFindProductModal: React.FC<WarehouseFindProductModalProps> = ({
               <th>Tulopvm</th>
               <th>Viimeisin muutos</th>
             </tr>
-            {spots &&
+            {spots && spots.length > 0 ? (
               spots.map((spot) => {
                 return (
                   <tr key={spot.id}>
@@ -67,7 +67,12 @@ const WarehouseFindProductModal: React.FC<WarehouseFindProductModalProps> = ({
                     </td>
                   </tr>
                 );
-              })}
+              })
+            ) : (
+              <tr>
+                <td colSpan={5}>Tuotetta ei löytynyt</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

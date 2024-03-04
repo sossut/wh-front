@@ -6,11 +6,15 @@ import { QuantityOption } from '../intefaces/QuantityOption';
 export interface EditProductModalProps {
   onClose: () => void;
   product: Product | null;
+  stateChanger: (
+    updateFunction: (prevProducts: Product[]) => Product[]
+  ) => void;
 }
 
 const EditProductModal: React.FC<EditProductModalProps> = ({
   onClose,
-  product
+  product,
+  stateChanger
 }) => {
   const { getQuantityOptions } = useProducts();
   const [quantityOptions, setQuantityOptions] = React.useState<
@@ -34,6 +38,12 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
   const hanldeClick = () => {
     onClose();
   };
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    console.log(productState);
+  };
+
   React.useEffect(() => {
     const fetchQuantityOptions = async () => {
       const quantityOptions = await getQuantityOptions();
@@ -49,7 +59,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
       </button>
       <div className="modal-content">
         <h3>Muokkaa tuotetta</h3>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div>
             <label htmlFor="product-code">Tuotekoodi</label>
             <input
@@ -57,7 +67,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
               id="product-code"
               name="product-code"
               required
-              value={product?.code}
+              value={productState?.code}
               onChange={(event) =>
                 setProductState({ ...productState, code: event.target.value })
               }
@@ -70,7 +80,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
               id="product-name"
               name="product-name"
               required
-              value={product?.name}
+              value={productState?.name}
               onChange={(event) =>
                 setProductState({ ...productState, name: event.target.value })
               }
@@ -83,7 +93,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
               id="product-weight"
               name="product-weight"
               required
-              value={product?.weight}
+              value={productState?.weight}
               onChange={(event) =>
                 setProductState({
                   ...productState,
@@ -99,7 +109,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
               id="product-quantity"
               name="product-quantity"
               required
-              value={product?.quantity}
+              value={productState?.quantity}
               onChange={(event) =>
                 setProductState({
                   ...productState,
@@ -115,7 +125,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
               id="product-price"
               name="product-price"
               required
-              value={product?.price}
+              value={productState?.price}
               onChange={(event) =>
                 setProductState({
                   ...productState,
@@ -129,7 +139,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
             <select
               id="quantity-option"
               name="quantity-option"
-              value={product?.quantityOptionId.toString()}
+              value={productState?.quantityOptionId.toString()}
               onChange={(event) =>
                 setProductState({
                   ...productState,
@@ -148,8 +158,8 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
         </form>
       </div>
       <p>
-        {product?.updatedAt &&
-          new Date(product.updatedAt).toLocaleDateString('FI-fi')}
+        {productState?.updatedAt &&
+          new Date(productState.updatedAt).toLocaleDateString('FI-fi')}
       </p>
     </div>
   );
