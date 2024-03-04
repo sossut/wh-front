@@ -16,8 +16,12 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
   outDocket,
   stateChanger
 }) => {
+  console.log({ outDocket });
   const [collectedQuantities, setCollectedQuantities] = React.useState<{
-    [key: number]: number;
+    [key: number]: {
+      collectedQuantity: number;
+      outDocketProductId?: number | null;
+    };
   }>({});
   const [parcelQuantity, setParcelQuantity] = React.useState<number>(0);
   const [transportOptions, setTransportOptions] = React.useState<
@@ -29,17 +33,20 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
   const [transportOption, setTransportOption] = React.useState<number>(
     outDocket.transportOptionId as number
   );
-  const { postSentOutDocket, getTransportOptions } = useOutDockets();
+  const { postSentOutDocket, getTransportOptions, getOutDocket } =
+    useOutDockets();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('submit');
-    console.log(collectedQuantities);
+
     const data = {
       docketId: outDocket.id,
       products: Object.keys(collectedQuantities).map((key) => {
         return {
           productId: parseInt(key),
-          deliveredProductQuantity: collectedQuantities[parseInt(key)]
+          deliveredProductQuantity:
+            collectedQuantities[parseInt(key)].collectedQuantity,
+          outDocketProductId:
+            collectedQuantities[parseInt(key)].outDocketProductId
         };
       }),
       parcels: parcelQuantity,
@@ -48,26 +55,32 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
     };
     console.log(data);
     const sod = await postSentOutDocket(data);
-
+    const newOutDocket = await getOutDocket(outDocket.id);
     if (sod) {
       stateChanger((prevDockets) => {
         return prevDockets.map((docket) => {
-          const newDocket = { ...docket };
-          newDocket.products = docket.products?.map((product) => {
-            for (const key in collectedQuantities) {
-              if (product.id === Number(key)) {
-                return {
-                  ...product,
-                  deliveredProductQuantity:
-                    (product.deliveredProductQuantity || 0) +
-                    collectedQuantities[key]
-                };
-              }
-            }
-            // Always return a product, even if it wasn't updated
-            return product;
-          });
-          return newDocket;
+          if (docket.id !== outDocket.id) {
+            return docket;
+          }
+          // const newDocket = { ...docket };
+          // newDocket.products = docket.products?.map((product) => {
+          //   for (const key in collectedQuantities) {
+          //     if (product.id === Number(key)) {
+          //       return {
+          //         ...product,
+          //         deliveredProductQuantity:
+          //           (product.deliveredProductQuantity || 0) +
+          //           collectedQuantities[key].collectedQuantity,
+          //         sendOutDocketProductId:
+          //           collectedQuantities[key].outDocketProductId
+          //       };
+          //     }
+          //   }
+          //   // Always return a product, even if it wasn't updated
+          //   return product;
+          // });
+          // return newDocket;
+          return newOutDocket;
         });
       });
       onClose();
@@ -80,7 +93,10 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
       }
       return {
         ...acc,
-        [product.id]: product.deliveredProductQuantity
+        [product.id]: {
+          collectedQuantity: product.deliveredProductQuantity,
+          outDocketProductId: product.outDocketProductId
+        }
       };
     }, {});
     if (!initialQuantities) {
@@ -106,7 +122,12 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
       console.log(e.target.value);
       setCollectedQuantities({
         ...collectedQuantities,
-        [productId]: parseInt(e.target.value)
+        [productId]: {
+          collectedQuantity: parseInt(e.target.value),
+          outDocketProductId: outDocket.products?.find(
+            (product) => product.id === productId
+          )?.outDocketProductId
+        }
       });
       console.log(collectedQuantities);
     };
@@ -154,7 +175,7 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
           <div className="big-modal-header-date">
             <p>
               Päivämäärä{' '}
-              {new Date(outDocket.createdAt).toLocaleDateString('FI-fi')}
+              {new Date(outDocket.createdAt ?? '').toLocaleDateString('FI-fi')}
             </p>
             <p>
               Toimituspäivä{' '}
@@ -186,12 +207,12 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
             </thead>
             <tbody>
               {outDocket.products &&
-                outDocket.products.map((product) => {
+                outDocket.products.map((product, index) => {
                   if (!product || product.id === undefined) {
                     return null;
                   }
                   return (
-                    <tr key={product.id}>
+                    <tr key={index}>
                       <td>{product.code}</td>
                       <td>{product.name}</td>
                       <td>{product.deliveredProductQuantity}</td>

@@ -20,11 +20,11 @@ const Warehouse: React.FC<WarehouseProps> = () => {
     React.useState(false);
   const { user } = useContext(AppContext);
   console.log(user);
-  const { rows, getRowsWithGapsWithSpots, getPallets, pallets } =
-    useWarehouse();
+  const { getRowsWithGapsWithSpots, getPallets } = useWarehouse();
+  const [rows, setRows] = React.useState<RowProps[]>([]);
   const [productCode, setProductCode] = React.useState<string>('');
-  console.log(rows);
-  console.log(pallets);
+
+  const [pallets, setPallets] = React.useState<PalletProps[]>([]);
   const [statePallets, setStatePallets] = React.useState<PalletProps[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
@@ -52,8 +52,15 @@ const Warehouse: React.FC<WarehouseProps> = () => {
   };
 
   useEffect(() => {
-    getRowsWithGapsWithSpots();
-    getPallets();
+    (async () => {
+      const rows = await getRowsWithGapsWithSpots();
+      console.log({ rows });
+
+      setRows(rows);
+      const pallets = await getPallets();
+      console.log({ pallets });
+      setPallets(pallets);
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {

@@ -17,7 +17,8 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
   stateChanger,
   onClose
 }) => {
-  const { getTransportOptions, putOutDocket } = useOutDockets();
+  const { getTransportOptions, putOutDocket, deleteOutDocket } =
+    useOutDockets();
   const { getProducts } = useProducts();
   const [transportOptions, setTransportOptions] = React.useState([]);
   const [products, setProducts] = React.useState<Product[]>([]);
@@ -45,7 +46,7 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
     console.log('submit');
     const data = {
       docketNumber: outDocketState.docketNumber,
-      clientId: outDocketState.client.id,
+      clientId: outDocketState.client?.id,
       departureAt: outDocketState.departureAt,
       transportOptionId: outDocketState.transportOptionId,
       products: outDocketState.products,
@@ -89,7 +90,11 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
     const code = selectedOption.dataset.code;
     const name = selectedOption.dataset.name;
     const orderedProductQuantity = form.orderedProductQuantity.value;
-    const deliveredProductQuantity = form.deliveredProductQuantity.value;
+    let deliveredProductQuantity = form.deliveredProductQuantity.value;
+    if (deliveredProductQuantity === '') {
+      deliveredProductQuantity = 0;
+    }
+    console.log({ deliveredProductQuantity });
     const quantityOption = selectedOption.dataset.qoption;
 
     // Add the new product to the state
@@ -108,7 +113,7 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
             quantityOption: 'pak' // Replace this with the actual quantity option
           },
 
-          outDocketId: outDocketState.id,
+          outDocketId: outDocketState.id || 0,
           productId: parseInt(id)
         }
       ]
@@ -116,6 +121,21 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
 
     // Hide the form
     setIsAddingProduct(false);
+  };
+
+  const handleDelete = async () => {
+    const result = window.confirm('Haluatko varmasti poistaa tämän lähetteen?');
+    if (result) {
+      console.log('delete');
+      const deletedDocket = await deleteOutDocket(outDocket.id);
+      console.log(deletedDocket);
+      if (deletedDocket) {
+        stateChanger((prevDockets) => {
+          return prevDockets.filter((docket) => docket.id !== deletedDocket.id);
+        });
+        onClose();
+      }
+    }
   };
 
   return (
@@ -146,7 +166,11 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
             <label htmlFor="client">Asiakas</label>
             <select
               id="client"
-              value={outDocketState.client.id.toString()}
+              value={
+                outDocketState.client?.id
+                  ? outDocketState.client.id.toString()
+                  : '1'
+              }
               onChange={(e) => {
                 setOutDocketState({
                   ...outDocketState,
@@ -184,7 +208,7 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
             <label htmlFor="transportOption">Kuljetusmuoto</label>
             <select
               id="transportOption"
-              value={outDocketState.transportOptionId.toString()}
+              value={outDocketState.transportOptionId?.toString()}
               onChange={(e) => {
                 setOutDocketState({
                   ...outDocketState,
@@ -225,12 +249,12 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {outDocketState?.products?.map((product) => {
-                    if (!product || product.id === undefined) {
+                  {outDocketState?.products?.map((product, index) => {
+                    if (!product || product.id === null) {
                       return null;
                     }
                     return (
-                      <tr key={product.id}>
+                      <tr key={index}>
                         <td>{product.code}</td>
                         <td>{product.name}</td>
                         <td>
@@ -328,6 +352,9 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
             </form>
           </div>
         )}
+        <button className="delete-button" onClick={handleDelete}>
+          Poista lähete
+        </button>
       </div>
     </div>
   );

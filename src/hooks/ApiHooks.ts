@@ -1,5 +1,5 @@
 import { Product } from './../intefaces/Product';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { apiUrl } from '../utils/variables';
 import { SpotProps } from '../components/Spot';
@@ -7,6 +7,7 @@ import { RowProps } from '../components/Row';
 import { PalletProps } from '../components/Pallet';
 import { QuantityOption } from '../intefaces/QuantityOption';
 import { OutDocket } from '../intefaces/OutDocket';
+import { ProductHistory } from '../intefaces/ProductHistory';
 
 const fetchJson = async (url: string, options = {}) => {
   try {
@@ -114,7 +115,7 @@ const useWarehouse = () => {
     }
   };
 
-  const getRowsWithGapsWithSpots = async () => {
+  const getRowsWithGapsWithSpots = async (): Promise<RowProps[]> => {
     try {
       const options = {
         headers: {
@@ -127,7 +128,7 @@ const useWarehouse = () => {
       return rows as RowProps[];
     } catch (error) {
       console.log(error);
-      return {} as RowProps;
+      return {} as RowProps[];
     }
   };
 
@@ -353,9 +354,28 @@ const useProducts = () => {
     }
   };
 
-  useEffect(() => {
-    getProducts();
-  }, []);
+  const getProductHistory = async (id = 0): Promise<ProductHistory[]> => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const history = await fetchJson(
+        `${apiUrl}/product/history/${id}`,
+        options
+      );
+      return history as ProductHistory[];
+    } catch (error) {
+      console.log(error);
+      return {} as ProductHistory[];
+    }
+  };
+
+  // useEffect(() => {
+  //   getProducts();
+  // }, []);
 
   return {
     products,
@@ -364,14 +384,15 @@ const useProducts = () => {
     postProduct,
     product,
     getSpotsByProductCode,
-    getQuantityOptions
+    getQuantityOptions,
+    getProductHistory
   };
 };
 
 const useOutDockets = () => {
   const [outDockets, setOutDockets] = useState<OutDocket[]>([]);
   const [outDocket, setOutDocket] = useState<OutDocket>({} as OutDocket);
-  const getOutDockets = async () => {
+  const getOutDockets = async (): Promise<OutDocket[]> => {
     try {
       const options = {
         headers: {
@@ -388,7 +409,7 @@ const useOutDockets = () => {
     }
   };
 
-  const getOutDocket = async (id = 0) => {
+  const getOutDocket = async (id = 0): Promise<OutDocket> => {
     try {
       const options = {
         headers: {
@@ -398,7 +419,9 @@ const useOutDockets = () => {
       };
       const outDocket = await fetchJson(`${apiUrl}/outdocket/${id}`, options);
       setOutDocket(outDocket);
+      return outDocket;
     } catch (error) {
+      return {} as OutDocket;
       console.error(error);
     }
   };
@@ -429,6 +452,22 @@ const useOutDockets = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify(data)
+      };
+      const json = await fetchJson(`${apiUrl}/outdocket/${id}`, options);
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteOutDocket = async (id = 0) => {
+    try {
+      const options = {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
       };
       const json = await fetchJson(`${apiUrl}/outdocket/${id}`, options);
       return json;
@@ -480,6 +519,7 @@ const useOutDockets = () => {
     getOutDocket,
     postOutDocket,
     putOutDocket,
+    deleteOutDocket,
     outDocket,
     postSentOutDocket,
     getTransportOptions

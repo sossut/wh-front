@@ -11,4 +11,5 @@ export interface OutDocketProduct {
   code: string;
   name: string;
   quantityOption: QuantityOption;
+  outDocketProductId?: number;
 }

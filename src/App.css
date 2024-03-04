@@ -350,6 +350,9 @@ h1 {
   padding: 0 0.2rem;
   text-align: center;
 }
+.delete-button {
+  width: fit-content;
+}
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

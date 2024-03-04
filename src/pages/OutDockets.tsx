@@ -18,7 +18,14 @@ const OutDockets = () => {
   React.useEffect(() => {
     const fetchOutDockets = async () => {
       const outDockets = await getOutDockets();
-      setOutDockets(outDockets);
+      const filteredOutDockets = outDockets.map((docket) => {
+        return {
+          ...docket,
+          products: docket.products?.filter((product) => product.id !== null)
+        };
+      });
+      setOutDockets(filteredOutDockets);
+      console.log(outDockets);
     };
     fetchOutDockets();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -31,13 +38,12 @@ const OutDockets = () => {
 
   const sortDockets = (dockets: OutDocket[]) => {
     if (!Array.isArray(dockets)) {
-      console.error(
-        'sortDockets was called with a non-array value:',
-        dockets
-      );
+      console.error('sortDockets was called with a non-array value:', dockets);
       return [];
     }
-    return dockets.sort((a, b) => a.docketNumber.localeCompare(b.docketNumber));
+    return dockets.sort((a, b) =>
+      a.docketNumber.toString().localeCompare(b.docketNumber.toString())
+    );
   };
 
   const editOutDocket = (outDocket: OutDocket) => {
@@ -54,9 +60,8 @@ const OutDockets = () => {
   };
 
   const handleAdd = () => {
-    
+    console.log('add');
     setIsAddModalOpen(true);
-    console.log('add')
   };
 
   const handleState = (
@@ -73,7 +78,13 @@ const OutDockets = () => {
           <button>Hae</button>
         </div>
         <div>
-          <button onClick={() => {handleAdd}}>Lisää lähete</button>
+          <button
+            onClick={() => {
+              handleAdd();
+            }}
+          >
+            Lisää lähete
+          </button>
         </div>
       </header>
       <main>
@@ -82,7 +93,7 @@ const OutDockets = () => {
             <tr>
               <th>Lähetenumero</th>
               <th>Asiakas</th>
-              <th>Toimitusosoite</th>
+
               <th>Luomispäivä</th>
               <th>Lähetyspäivä</th>
               <th>Tila</th>
@@ -91,15 +102,14 @@ const OutDockets = () => {
             </tr>
           </thead>
           <tbody>
-            {
-            Array.isArray(filteredOutDockets) &&
-            filteredOutDockets &&
+            {Array.isArray(filteredOutDockets) &&
+              filteredOutDockets &&
               filteredOutDockets.map((outDocket) => {
                 return (
                   <tr key={outDocket.id}>
                     <td>{outDocket.docketNumber}</td>
                     <td>{(outDocket.client as Client).name}</td>
-                    <td>Tähän osoite</td>
+
                     <td>
                       {outDocket.createdAt
                         ? new Date(outDocket.createdAt).toLocaleDateString(
@@ -149,7 +159,7 @@ const OutDockets = () => {
         <AddOutDocketModal
           stateChanger={handleState}
           onClose={() => setIsAddModalOpen(false)}
-          />
+        />
       )}
     </div>
   );
