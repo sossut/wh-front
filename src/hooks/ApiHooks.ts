@@ -543,6 +543,76 @@ const useInDockets = () => {
       return {} as InDocket[];
     }
   };
-  return { getInDockets };
-}
+  const getInDocket = async (id = 0): Promise<InDocket> => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const inDocket = await fetchJson(`${apiUrl}/indocket/${id}`, options);
+      return inDocket;
+    } catch (error) {
+      console.error(error);
+      return {} as InDocket;
+    }
+  };
+  const postInDocket = async (data: unknown) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+      const json = await fetchJson(`${apiUrl}/indocket`, options);
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const putInDocket = async (id = 0, data: unknown) => {
+    try {
+      const options = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+      const json = await fetchJson(`${apiUrl}/indocket/${id}`, options);
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteInDocket = async (id = 0) => {
+    try {
+      const options = {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const json = await fetchJson(`${apiUrl}/indocket/${id}`, options);
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  return {
+    getInDockets,
+    getInDocket,
+    postInDocket,
+    putInDocket,
+    deleteInDocket
+  };
+};
 export { useLogin, useWarehouse, useProducts, useOutDockets, useInDockets };
