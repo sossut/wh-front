@@ -8,6 +8,7 @@ import { PalletProps } from '../components/Pallet';
 import { QuantityOption } from '../intefaces/QuantityOption';
 import { OutDocket } from '../intefaces/OutDocket';
 import { ProductHistory } from '../intefaces/ProductHistory';
+import { InDocket } from '../intefaces/InDocket';
 
 const fetchJson = async (url: string, options = {}) => {
   try {
@@ -526,4 +527,22 @@ const useOutDockets = () => {
   };
 };
 
-export { useLogin, useWarehouse, useProducts, useOutDockets };
+const useInDockets = () => {
+  const getInDockets = async (): Promise<InDocket[]> => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const inDockets = await fetchJson(`${apiUrl}/indocket`, options);
+      return inDockets;
+    } catch (error) {
+      console.error(error);
+      return {} as InDocket[];
+    }
+  };
+  return { getInDockets };
+}
+export { useLogin, useWarehouse, useProducts, useOutDockets, useInDockets };
