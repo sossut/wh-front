@@ -77,7 +77,7 @@ const InDocketsPage = () => {
                 <td>12.12.2021</td>
 
                 <td>
-                  <button onClick={() => editInDocket(inDocket)}>
+                  <button onClick={() => editInDocket({} as InDocket)}>
                     Muokkaa
                   </button>
                 </td>
