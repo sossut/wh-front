@@ -1,14 +1,25 @@
 import React from 'react';
 import { useInDockets } from '../hooks/ApiHooks';
 import { InDocket } from '../intefaces/InDocket';
+import EditInDocketModal from '../components/EditInDocketModal';
+import AddInDocketModal from '../components/AddInDocketModal';
 
 const InDocketsPage = () => {
-  const {getInDockets, postInDocket} = useInDockets();
+  const { getInDockets, postInDocket } = useInDockets();
   const [inDockets, setInDockets] = React.useState<InDocket[]>([]);
   const [inDocket, setInDocket] = React.useState<InDocket | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
   const [isFullModalOpen, setIsFullModalOpen] = React.useState(false);
+  const handleState = (
+    updateFunction: (prevDockets: InDocket[]) => InDocket[]
+  ) => {
+    setInDockets(updateFunction);
+  };
+  const editInDocket = (inDocket: InDocket) => {
+    setInDocket(inDocket);
+    setIsEditModalOpen(true);
+  };
   React.useEffect(() => {
     (async () => {
       const inDockets = await getInDockets();
@@ -17,46 +28,77 @@ const InDocketsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <div className='dockets-body common-body'>
+    <div className="dockets-body common-body">
       <header className="dockets-header common-header">
-      <h1>Saapuneet rahtikirjat</h1>
-      <div>
+        <h1>Saapuneet rahtikirjat</h1>
+        <div>
           <input type="text" placeholder="Hae"></input>
           <button>Hae</button>
         </div>
 
-      <button onClick={() => setIsAddModalOpen(true)}>Lisää rahtikirja</button>
+        <button onClick={() => setIsAddModalOpen(true)}>
+          Lisää rahtikirja
+        </button>
       </header>
       <main>
-        <div className='dockets-list'>
-          <table className='dockets-table common-table'>
-            <thead className='dockets-thead common-thead'>
+        <div className="dockets-list">
+          <table className="dockets-table common-table">
+            <thead className="dockets-thead common-thead">
               <tr>
                 <th>Rahtikirjanumero</th>
-                <th>Saapumisaika</th>
-                
+                <th>Toimittaja</th>
+                <th>Saapumispäivä</th>
+
                 <th></th>
               </tr>
             </thead>
             <tbody>
               <tr>
+                {Array.isArray(inDockets) &&
+                  inDockets &&
+                  inDockets.map((inDocket) => (
+                    <tr key={inDocket.id}>
+                      <td>{inDocket.docketNumber}</td>
+                      <td>{inDocket.vendorId}</td>
+                      <td>
+                        {new Date(inDocket.createdAt).toLocaleDateString(
+                          'FI-fi'
+                        )}
+                      </td>
+                      <td>
+                        <button onClick={() => setIsFullModalOpen(true)}>
+                          Näytä
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 <td>123456</td>
-                <td>12.12.2021 12:00</td>
-                
-                <td><button onClick={() => setIsEditModalOpen(true)}>Muokkaa</button></td>
+                <td>Pacovis</td>
+                <td>12.12.2021</td>
+
+                <td>
+                  <button onClick={() => editInDocket(inDocket)}>
+                    Muokkaa
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
-          {inDockets && inDockets.length > 0 && inDockets.map((inDocket) => (
-            <div key={inDocket.id} className='docket'>
-              <p>Rahtikirjanumero: {inDocket.docketNumber}</p>
-              <p>Saapumisaika: {inDocket.arrivalAt ? new Date(inDocket.arrivalAt).toLocaleString() : 'N/A'}</p>
-              <button onClick={() => setIsFullModalOpen(true)}>Vastaanota</button>
-              <button onClick={() => setIsEditModalOpen(true)}>Muokkaa</button>
-            </div>
-          ))}
         </div>
       </main>
+      {isEditModalOpen && inDocket && (
+        <EditInDocketModal
+          onClose={() => setIsEditModalOpen(false)}
+          inDocket={inDocket}
+          stateChange={handleState}
+        />
+      )}
+      {isAddModalOpen && (
+        <AddInDocketModal
+          onClose={() => setIsAddModalOpen(false)}
+          stateChange={handleState}
+        />
+      )}
     </div>
   );
 };

@@ -42,7 +42,7 @@ const OutDockets = () => {
       return [];
     }
     return dockets.sort((a, b) =>
-      a.docketNumber.toString().localeCompare(b.docketNumber.toString())
+      b.docketNumber.toString().localeCompare(a.docketNumber.toString())
     );
   };
 
