@@ -33,7 +33,7 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
   const [transportOption, setTransportOption] = React.useState<number>(
     outDocket.transportOptionId as number
   );
-  const { postSentOutDocket, getTransportOptions, getOutDocket } =
+  const { postPendingShipment, getTransportOptions, getOutDocket } =
     useOutDockets();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,7 +54,7 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
       departureAt: departureAt
     };
     console.log(data);
-    const sod = await postSentOutDocket(data);
+    const sod = await postPendingShipment(data);
     const newOutDocket = await getOutDocket(outDocket.id);
     if (sod) {
       stateChanger((prevDockets) => {
@@ -62,24 +62,7 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
           if (docket.id !== outDocket.id) {
             return docket;
           }
-          // const newDocket = { ...docket };
-          // newDocket.products = docket.products?.map((product) => {
-          //   for (const key in collectedQuantities) {
-          //     if (product.id === Number(key)) {
-          //       return {
-          //         ...product,
-          //         deliveredProductQuantity:
-          //           (product.deliveredProductQuantity || 0) +
-          //           collectedQuantities[key].collectedQuantity,
-          //         sendOutDocketProductId:
-          //           collectedQuantities[key].outDocketProductId
-          //       };
-          //     }
-          //   }
-          //   // Always return a product, even if it wasn't updated
-          //   return product;
-          // });
-          // return newDocket;
+
           return newOutDocket;
         });
       });

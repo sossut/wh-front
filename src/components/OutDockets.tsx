@@ -60,7 +60,6 @@ const OutDockets = () => {
   };
 
   const handleAdd = () => {
-    console.log('add');
     setIsAddModalOpen(true);
   };
 

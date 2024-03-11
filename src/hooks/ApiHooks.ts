@@ -9,6 +9,7 @@ import { QuantityOption } from '../intefaces/QuantityOption';
 import { OutDocket } from '../intefaces/OutDocket';
 import { ProductHistory } from '../intefaces/ProductHistory';
 import { InDocket } from '../intefaces/InDocket';
+import { SentOutDocket } from '../intefaces/SentOutDocket';
 
 const fetchJson = async (url: string, options = {}) => {
   try {
@@ -320,6 +321,24 @@ const useProducts = () => {
     }
   };
 
+  const putProduct = async (id = 0, data: unknown): Promise<Product> => {
+    try {
+      const options = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+      const json = await fetchJson(`${apiUrl}/product/${id}`, options);
+      return json as Product;
+    } catch (error) {
+      console.log(error);
+      return {} as Product;
+    }
+  };
+
   const getSpotsByProductCode = async (code = ''): Promise<SpotProps[]> => {
     try {
       const options = {
@@ -383,6 +402,7 @@ const useProducts = () => {
     getProducts,
     getProduct,
     postProduct,
+    putProduct,
     product,
     getSpotsByProductCode,
     getQuantityOptions,
@@ -477,6 +497,44 @@ const useOutDockets = () => {
     }
   };
 
+  const getSentOutDockets = async (): Promise<SentOutDocket[]> => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const sentOutDockets = await fetchJson(
+        `${apiUrl}/sent-outdocket`,
+        options
+      );
+      return sentOutDockets;
+    } catch (error) {
+      console.error(error);
+      return {} as SentOutDocket[];
+    }
+  };
+
+  const getPendingShipments = async (): Promise<SentOutDocket[]> => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const pendingShipments = await fetchJson(
+        `${apiUrl}/sent-outdocket/pending`,
+        options
+      );
+      return pendingShipments;
+    } catch (error) {
+      console.error(error);
+      return {} as SentOutDocket[];
+    }
+  };
+
   const postSentOutDocket = async (data: unknown) => {
     try {
       const options = {
@@ -489,6 +547,24 @@ const useOutDockets = () => {
       };
       console.log(data);
       const json = await fetchJson(`${apiUrl}/sent-outdocket`, options);
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const postPendingShipment = async (data: unknown) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+      console.log(data);
+      const json = await fetchJson(`${apiUrl}/sent-outdocket/pending`, options);
       return json;
     } catch (error) {
       console.error(error);
@@ -517,12 +593,15 @@ const useOutDockets = () => {
   return {
     outDockets,
     getOutDockets,
+    getPendingShipments,
     getOutDocket,
     postOutDocket,
     putOutDocket,
     deleteOutDocket,
     outDocket,
+    getSentOutDockets,
     postSentOutDocket,
+    postPendingShipment,
     getTransportOptions
   };
 };

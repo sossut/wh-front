@@ -16,7 +16,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
   product,
   stateChanger
 }) => {
-  const { getQuantityOptions } = useProducts();
+  const { getQuantityOptions, putProduct } = useProducts();
   const [quantityOptions, setQuantityOptions] = React.useState<
     QuantityOption[]
   >([]);
@@ -42,6 +42,18 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     console.log(productState);
+    const updatedProduct = await putProduct(product?.id, productState);
+    if (updatedProduct) {
+      stateChanger((prevProducts) => {
+        return prevProducts.map((p) => {
+          if (p.id === updatedProduct.id) {
+            return updatedProduct;
+          }
+          return p;
+        });
+      });
+      onClose();
+    }
   };
 
   React.useEffect(() => {
