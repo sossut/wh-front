@@ -212,7 +212,7 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
                             type="number"
                           ></input>
                         )) ||
-                          'täysimääräinen') || product.collectedProductQuantity}
+                          'täysimääräinen') ||'kerättynä' + product.collectedProductQuantity}
                       </td>
                     </tr>
                   );
