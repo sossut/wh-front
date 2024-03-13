@@ -202,7 +202,8 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
                       <td>{product.orderedProductQuantity}</td>
                       <td>{product.quantityOption?.quantityOption}</td>
                       <td>
-                        {(product.orderedProductQuantity !=
+                        
+                        {(product.collectedProductQuantity != null && (product.orderedProductQuantity !=
                           product.deliveredProductQuantity && (
                           <input
                             min={0}
@@ -211,7 +212,7 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
                             type="number"
                           ></input>
                         )) ||
-                          'täysimääräinen'}
+                          'täysimääräinen') || product.collectedProductQuantity}
                       </td>
                     </tr>
                   );

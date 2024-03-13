@@ -12,4 +12,5 @@ export interface OutDocketProduct {
   name: string;
   quantityOption: QuantityOption;
   outDocketProductId?: number;
+  collectedProductQuantity?: number;
 }
