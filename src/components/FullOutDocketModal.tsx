@@ -21,6 +21,7 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
     [key: number]: {
       collectedQuantity: number;
       outDocketProductId?: number | null;
+      originalQuantity?: number;
     };
   }>({});
   const [parcelQuantity, setParcelQuantity] = React.useState<number>(0);
@@ -40,15 +41,23 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
 
     const data = {
       docketId: outDocket.id,
-      products: Object.keys(collectedQuantities).map((key) => {
-        return {
-          productId: parseInt(key),
-          deliveredProductQuantity:
-            collectedQuantities[parseInt(key)].collectedQuantity,
-          outDocketProductId:
-            collectedQuantities[parseInt(key)].outDocketProductId
-        };
-      }),
+      products: Object.keys(collectedQuantities)
+        .filter((key) => {
+          // Compare the collected quantity with the original quantity
+          return (
+            collectedQuantities[parseInt(key)].collectedQuantity !==
+            collectedQuantities[parseInt(key)].originalQuantity
+          );
+        })
+        .map((key) => {
+          return {
+            productId: parseInt(key),
+            deliveredProductQuantity:
+              collectedQuantities[parseInt(key)].collectedQuantity,
+            outDocketProductId:
+              collectedQuantities[parseInt(key)].outDocketProductId
+          };
+        }),
       parcels: parcelQuantity,
       transportOptionId: transportOption,
       departureAt: departureAt
@@ -78,7 +87,8 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
         ...acc,
         [product.id]: {
           collectedQuantity: product.deliveredProductQuantity,
-          outDocketProductId: product.outDocketProductId
+          outDocketProductId: product.outDocketProductId,
+          originalQuantity: product.deliveredProductQuantity
         }
       };
     }, {});
