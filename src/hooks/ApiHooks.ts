@@ -10,6 +10,7 @@ import { OutDocket } from '../intefaces/OutDocket';
 import { ProductHistory } from '../intefaces/ProductHistory';
 import { InDocket } from '../intefaces/InDocket';
 import { SentOutDocket } from '../intefaces/SentOutDocket';
+import { PendingShipment } from '../intefaces/PendingShipment';
 
 const fetchJson = async (url: string, options = {}) => {
   try {
@@ -516,7 +517,7 @@ const useOutDockets = () => {
     }
   };
 
-  const getPendingShipments = async (): Promise<SentOutDocket[]> => {
+  const getPendingShipments = async (): Promise<PendingShipment[]> => {
     try {
       const options = {
         headers: {
@@ -531,7 +532,7 @@ const useOutDockets = () => {
       return pendingShipments;
     } catch (error) {
       console.error(error);
-      return {} as SentOutDocket[];
+      return {} as PendingShipment[];
     }
   };
 

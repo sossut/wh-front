@@ -1,4 +1,4 @@
-export interface SentOutDocketProduct {
+export interface PendingShipmentProduct {
   id?: number;
   pendingShipmentId: number;
   productId: number;

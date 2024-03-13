@@ -1,6 +1,7 @@
 import { Client } from './Client';
 import { OutDocket } from './OutDocket';
-import { SentOutDocketProduct } from './SentOutDocketProduct';
+import { PendingShipmentProduct } from './PendingShipmentProduct';
+
 import { TransportOption } from './TransportOption';
 import { User } from './User';
 
@@ -13,7 +14,7 @@ export interface PendingShipment {
   status: 'open' | 'closed';
   parcels: number;
   departureAt: Date;
-  products: SentOutDocketProduct[];
+  products: PendingShipmentProduct[];
   client: number | Client;
   outDocket: OutDocket;
   transportOption: TransportOption;
