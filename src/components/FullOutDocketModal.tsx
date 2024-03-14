@@ -213,7 +213,9 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
                       <td>{product.quantityOption?.quantityOption}</td>
                       <td>
                         {product.collectedProductQuantity ? (
-                          'kerättynä ' + product.collectedProductQuantity
+                          <div>
+                          <p>kerättynä </p>  <input value={product.collectedProductQuantity} type="number"></input>
+                          </div>
                         ) : product.orderedProductQuantity !==
                           product.deliveredProductQuantity ? (
                           <input
