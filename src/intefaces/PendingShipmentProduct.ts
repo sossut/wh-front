@@ -3,6 +3,8 @@ export interface PendingShipmentProduct {
   pendingShipmentId: number;
   productId: number;
   orderedProductQuantity?: number;
-  deliveredProductQuantity: number;
+  collectedProductQuantity: number;
   outDocketProductId?: number;
+  code: string;
+  name: string;
 }

@@ -5,8 +5,15 @@ import { Client } from '../intefaces/Client';
 import FullOutDocketModal from '../components/FullOutDocketModal';
 import EditOutDocket from '../components/EditOutDocket';
 import AddOutDocketModal from '../components/AddOutDocketModal';
+import { PendingShipment } from '../intefaces/PendingShipment';
 
-const OutDockets = () => {
+export interface OutDocketsProps {
+  updateState: (
+    updateFunction: (prevDockets: PendingShipment[]) => PendingShipment[]
+  ) => void;
+}
+
+const OutDockets: React.FC<OutDocketsProps> = ({ updateState }) => {
   const { getOutDockets } = useOutDockets();
   const [outDockets, setOutDockets] = React.useState<OutDocket[]>([]);
   const [outDocket, setOutDocket] = React.useState<OutDocket | null>(null);
@@ -145,6 +152,7 @@ const OutDockets = () => {
           onClose={handleClose}
           outDocket={outDocket}
           stateChanger={handleState}
+          updateState={updateState}
         ></FullOutDocketModal>
       )}
       {isEditModalOpen && outDocket && (

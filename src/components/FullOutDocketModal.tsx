@@ -2,6 +2,7 @@ import React from 'react';
 import { OutDocket } from '../intefaces/OutDocket';
 import { TransportOption } from '../intefaces/TransportOption';
 import { useOutDockets } from '../hooks/ApiHooks';
+import { PendingShipment } from '../intefaces/PendingShipment';
 
 export interface FullOutDocketModalProps {
   onClose: () => void;
@@ -9,12 +10,16 @@ export interface FullOutDocketModalProps {
   stateChanger: (
     updateFunction: (prevDockets: OutDocket[]) => OutDocket[]
   ) => void;
+  updateState: (
+    updateFunction: (prevDockets: PendingShipment[]) => PendingShipment[]
+  ) => void;
 }
 
 const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
   onClose,
   outDocket,
-  stateChanger
+  stateChanger,
+  updateState
 }) => {
   console.log({ outDocket });
   const [collectedQuantities, setCollectedQuantities] = React.useState<{
@@ -34,8 +39,12 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
   const [transportOption, setTransportOption] = React.useState<number>(
     outDocket.transportOptionId as number
   );
-  const { postPendingShipment, getTransportOptions, getOutDocket } =
-    useOutDockets();
+  const {
+    postPendingShipment,
+    getTransportOptions,
+    getOutDocket,
+    getPendingShipment
+  } = useOutDockets();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -62,7 +71,11 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
       transportOptionId: transportOption,
       departureAt: departureAt
     };
-    console.log(data);
+    console.log({ data });
+    if (data.products.length === 0) {
+      alert('Mitään ei ole muutettu');
+      return;
+    }
     const sod = await postPendingShipment(data);
     const newOutDocket = await getOutDocket(outDocket.id);
     if (sod) {
@@ -75,6 +88,18 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
           return newOutDocket;
         });
       });
+      const newPendingShipment = await getPendingShipment(sod.id);
+      console.log({ newPendingShipment });
+      updateState((prevPendingShipments) => {
+        console.log({ prevPendingShipments });
+        const newPendingShipments = [
+          ...prevPendingShipments,
+          newPendingShipment
+        ];
+        console.log({ newPendingShipments });
+        return newPendingShipments;
+      });
+
       onClose();
     }
   };
@@ -214,7 +239,8 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
                       <td>
                         {product.collectedProductQuantity ? (
                           <div>
-                          <p>kerättynä </p>  <input value={product.collectedProductQuantity} type="number"></input>
+                            <p>kerättynä </p>{' '}
+                            <p>{product.collectedProductQuantity}</p>
                           </div>
                         ) : product.orderedProductQuantity !==
                           product.deliveredProductQuantity ? (

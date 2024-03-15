@@ -2,7 +2,13 @@ import React from 'react';
 import { SentOutDocket } from '../intefaces/SentOutDocket';
 import { useOutDockets } from '../hooks/ApiHooks';
 
-const SentOutDockets = () => {
+export interface SentOutDocketsProps {
+  updateState: (
+    updateFunction: (prevDockets: SentOutDocket[]) => SentOutDocket[]
+  ) => void;
+}
+
+const SentOutDockets: React.FC<SentOutDocketsProps> = ({ updateState }) => {
   const { getSentOutDockets } = useOutDockets();
   const [sentOutDockets, setSentOutDockets] = React.useState<SentOutDocket[]>(
     []
