@@ -649,6 +649,27 @@ const useOutDockets = () => {
     }
   };
 
+  const postDaysShipments = async (data: unknown) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+
+      const json = await fetchJson(
+        `${apiUrl}/sent-outdocket/days-shipments`,
+        options
+      );
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return {
     outDockets,
     getOutDockets,
@@ -664,7 +685,8 @@ const useOutDockets = () => {
     getSentOutDockets,
     postSentOutDocket,
     postPendingShipment,
-    getTransportOptions
+    getTransportOptions,
+    postDaysShipments
   };
 };
 

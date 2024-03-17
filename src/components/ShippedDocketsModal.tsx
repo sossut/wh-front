@@ -4,6 +4,8 @@ import { PendingShipment } from '../intefaces/PendingShipment';
 import { Client } from '../intefaces/Client';
 import { useOutDockets } from '../hooks/ApiHooks';
 import { OutDocket } from '../intefaces/OutDocket';
+import { DaysShipments } from '../intefaces/DaysShipments';
+import { DaysShipmentsSentOutDocket } from '../intefaces/DaysShipmentsSentOutDocket';
 
 export interface ShippedDocketsModalProps {
   onClose: () => void;
@@ -29,11 +31,15 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
     getOutDocketsByIds,
     deletePendingShipment,
     getPendingShipments,
-    getSentOutDockets
+    getSentOutDockets,
+    postDaysShipments
   } = useOutDockets();
   const handleSent = async () => {
     try {
-      const sods = [] as number[];
+      const dss: DaysShipments = {
+        departedAt: new Date(),
+        sentOutDockets: []
+      };
       await Promise.all(
         pendingShipments.map(async (pendingShipment) => {
           const sentOutDocket: unknown = {
@@ -50,12 +56,19 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
               };
             })
           };
-          console.log({ sentOutDocket });
+
           const sod = await postSentOutDocket(sentOutDocket);
-          sods.push(sod.id);
+          if (typeof sod.id !== 'number') {
+            throw new Error('sod.id is not a number');
+          }
+          const dssod: DaysShipmentsSentOutDocket = {
+            sentOutDocketId: sod.id as number
+          };
+          dss.sentOutDockets.push(dssod);
         })
       );
-      console.log({ sods });
+
+      await postDaysShipments(dss);
       setIsSent(true);
       for (const pendingShipment of pendingShipments) {
         await deletePendingShipment(pendingShipment.id as number);
