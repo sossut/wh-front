@@ -5,7 +5,7 @@ import { TransportOption } from './TransportOption';
 import { User } from './User';
 
 export interface SentOutDocket {
-  id: number;
+  id?: number;
   docketId: number | OutDocket;
   transportOptionId: number | TransportOption;
   userId: number | User;

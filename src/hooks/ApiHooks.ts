@@ -431,6 +431,27 @@ const useOutDockets = () => {
     }
   };
 
+  const getOutDocketsByIds = async (data: unknown): Promise<OutDocket[]> => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+      const outDockets = await fetchJson(
+        `${apiUrl}/outdocket/multiple`,
+        options
+      );
+      return outDockets;
+    } catch (error) {
+      console.error(error);
+      return {} as OutDocket[];
+    }
+  };
+
   const getOutDocket = async (id = 0): Promise<OutDocket> => {
     try {
       const options = {
@@ -444,7 +465,6 @@ const useOutDockets = () => {
       return outDocket;
     } catch (error) {
       return {} as OutDocket;
-      console.error(error);
     }
   };
 
@@ -555,6 +575,25 @@ const useOutDockets = () => {
     }
   };
 
+  const deletePendingShipment = async (id = 0) => {
+    try {
+      const options = {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const json = await fetchJson(
+        `${apiUrl}/sent-outdocket/pending/${id}`,
+        options
+      );
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const postSentOutDocket = async (data: unknown) => {
     try {
       const options = {
@@ -613,8 +652,10 @@ const useOutDockets = () => {
   return {
     outDockets,
     getOutDockets,
+    getOutDocketsByIds,
     getPendingShipments,
     getPendingShipment,
+    deletePendingShipment,
     getOutDocket,
     postOutDocket,
     putOutDocket,

@@ -20,9 +20,18 @@ const SentShipmentsAndDockets = () => {
   React.useEffect(() => {
     (async () => {
       const outDockets = await getOutDockets();
-      setOutDockets(Array.isArray(outDockets) ? outDockets : []);
+      const filteredOutDockets = outDockets.map((docket) => {
+        return {
+          ...docket,
+          products: docket.products?.filter((product) => product.id !== null)
+        };
+      });
+
+      setOutDockets(
+        Array.isArray(filteredOutDockets) ? filteredOutDockets : []
+      );
       const pendingShipments = await getPendingShipments();
-      console.log('pending from db', pendingShipments);
+
       setPendingShipments(
         Array.isArray(pendingShipments) ? pendingShipments : []
       );
@@ -42,16 +51,27 @@ const SentShipmentsAndDockets = () => {
         ) => {
           setPendingShipments(updateFunction(pendingShipments));
         }}
+        outDockets={outDockets}
+        updateDocketsState={(
+          updateFunction: (prevDockets: OutDocket[]) => OutDocket[]
+        ) => {
+          setOutDockets(updateFunction(outDockets));
+        }}
       />
       <PendingShipments
-        updateState={(
+        updatePendingShipmentState={(
           updateFunction: (
-            prevPendingShipments: SentOutDocket[]
-          ) => SentOutDocket[]
+            prevPendingShipments: PendingShipment[]
+          ) => PendingShipment[]
+        ) => {
+          setPendingShipments(updateFunction(pendingShipments));
+        }}
+        pendingShipments={pendingShipments}
+        updateSentOutDocketState={(
+          updateFunction: (prevDockets: SentOutDocket[]) => SentOutDocket[]
         ) => {
           setSentOutDockets(updateFunction(sentOutDockets));
         }}
-        pendingShipments={pendingShipments}
       />
 
       <SentOutDockets
@@ -60,6 +80,7 @@ const SentShipmentsAndDockets = () => {
         ) => {
           setSentOutDockets(updateFunction(sentOutDockets));
         }}
+        sentOutDockets={sentOutDockets}
       />
     </div>
   );

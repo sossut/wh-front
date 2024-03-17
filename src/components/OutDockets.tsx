@@ -1,5 +1,5 @@
 import React from 'react';
-import { useOutDockets } from '../hooks/ApiHooks';
+// import { useOutDockets } from '../hooks/ApiHooks';
 import { OutDocket } from '../intefaces/OutDocket';
 import { Client } from '../intefaces/Client';
 import FullOutDocketModal from '../components/FullOutDocketModal';
@@ -11,11 +11,19 @@ export interface OutDocketsProps {
   updateState: (
     updateFunction: (prevDockets: PendingShipment[]) => PendingShipment[]
   ) => void;
+  outDockets: OutDocket[];
+  updateDocketsState: (
+    updateFunction: (prevDockets: OutDocket[]) => OutDocket[]
+  ) => void;
 }
 
-const OutDockets: React.FC<OutDocketsProps> = ({ updateState }) => {
-  const { getOutDockets } = useOutDockets();
-  const [outDockets, setOutDockets] = React.useState<OutDocket[]>([]);
+const OutDockets: React.FC<OutDocketsProps> = ({
+  updateState,
+  outDockets,
+  updateDocketsState
+}) => {
+  // const { getOutDockets } = useOutDockets();
+  // const [outDockets, setOutDockets] = React.useState<OutDocket[]>([]);
   const [outDocket, setOutDocket] = React.useState<OutDocket | null>(null);
   const [filteredOutDockets, setFilteredOutDockets] =
     React.useState(outDockets);
@@ -23,18 +31,18 @@ const OutDockets: React.FC<OutDocketsProps> = ({ updateState }) => {
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
   React.useEffect(() => {
-    const fetchOutDockets = async () => {
-      const outDockets = await getOutDockets();
-      const filteredOutDockets = outDockets.map((docket) => {
-        return {
-          ...docket,
-          products: docket.products?.filter((product) => product.id !== null)
-        };
-      });
-      setOutDockets(filteredOutDockets);
-      console.log(outDockets);
-    };
-    fetchOutDockets();
+    // const fetchOutDockets = async () => {
+    //   const outDockets = await getOutDockets();
+    //   const filteredOutDockets = outDockets.map((docket) => {
+    //     return {
+    //       ...docket,
+    //       products: docket.products?.filter((product) => product.id !== null)
+    //     };
+    //   });
+    //   setOutDockets(filteredOutDockets);
+    //   console.log(outDockets);
+    // };
+    // fetchOutDockets();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -70,11 +78,11 @@ const OutDockets: React.FC<OutDocketsProps> = ({ updateState }) => {
     setIsAddModalOpen(true);
   };
 
-  const handleState = (
-    updateFunction: (prevDockets: OutDocket[]) => OutDocket[]
-  ) => {
-    setOutDockets(updateFunction);
-  };
+  // const handleState = (
+  //   updateFunction: (prevDockets: OutDocket[]) => OutDocket[]
+  // ) => {
+  //   setOutDockets(updateFunction);
+  // };
   return (
     <div className="dockets-body common-body">
       <header className="dockets-header common-header">
@@ -151,20 +159,20 @@ const OutDockets: React.FC<OutDocketsProps> = ({ updateState }) => {
         <FullOutDocketModal
           onClose={handleClose}
           outDocket={outDocket}
-          stateChanger={handleState}
+          stateChanger={updateDocketsState}
           updateState={updateState}
         ></FullOutDocketModal>
       )}
       {isEditModalOpen && outDocket && (
         <EditOutDocket
           outDocket={outDocket}
-          stateChanger={handleState}
+          stateChanger={updateDocketsState}
           onClose={() => setIsEditModalOpen(false)}
         ></EditOutDocket>
       )}
       {isAddModalOpen && (
         <AddOutDocketModal
-          stateChanger={handleState}
+          stateChanger={updateDocketsState}
           onClose={() => setIsAddModalOpen(false)}
         />
       )}

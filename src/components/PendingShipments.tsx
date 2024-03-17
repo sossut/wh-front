@@ -1,53 +1,49 @@
 import React from 'react';
 
-import { useOutDockets } from '../hooks/ApiHooks';
 import { PendingShipment } from '../intefaces/PendingShipment';
 import { Client } from '../intefaces/Client';
 import PendingShipmentModal from './PendingShipmentModal';
 import { SentOutDocket } from '../intefaces/SentOutDocket';
+import ShippedDocketsModal from './ShippedDocketsModal';
 
 export interface PendingShipmentsProps {
-  updateState: (
-    updateFunction: (prevPendingShipments: SentOutDocket[]) => SentOutDocket[]
+  updatePendingShipmentState: (
+    updateFunction: (
+      prevPendingShipments: PendingShipment[]
+    ) => PendingShipment[]
   ) => void;
   pendingShipments: PendingShipment[];
+  updateSentOutDocketState: (
+    updateFunction: (prevDockets: SentOutDocket[]) => SentOutDocket[]
+  ) => void;
 }
 
 const PendingShipments: React.FC<PendingShipmentsProps> = ({
-  updateState,
-  pendingShipments
+  updatePendingShipmentState,
+  pendingShipments,
+  updateSentOutDocketState
 }) => {
   // const [pendingShipments, setPendingShipments] = React.useState<
   //   PendingShipment[]
   // >([]);
   const [pendingShipment, setPendingShipment] =
     React.useState<PendingShipment>();
-  const [deliveredShipments, setDeliveredShipments] = React.useState<
-    PendingShipment[]
-  >([]);
+  const [checked, setChecked] = React.useState<PendingShipment[]>([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-
+  const [isShipperModalOpen, setIsShipperModalOpen] = React.useState(false);
   const handleModalOpen = (pendingShipment: PendingShipment) => {
     setIsModalOpen(true);
     setPendingShipment(pendingShipment);
   };
-  React.useEffect(() => {
-    // (async () => {
-    //   const pending = await getPendingShipments();
-    //   console.log(pending);
-    //   if (pending) {
-    //     setPendingShipments(pending);
-    //   }
-    // })();
-    console.log('PendingShipments', pendingShipments);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+  const handleSent = () => {
+    console.log({ checked });
+    setIsShipperModalOpen(true);
+  };
   return (
     <div className="common-body">
       <div className="common-header">
         <h1>Odottavat Lähetykset</h1>
-        <button onClick={() => console.log('clicked')}>Toimitukseen</button>
+        <button onClick={handleSent}>Toimitukseen</button>
       </div>
       <table className="common-table">
         <thead>
@@ -81,7 +77,19 @@ const PendingShipments: React.FC<PendingShipmentsProps> = ({
                   </button>
                 </td>
                 <td>
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={checked.includes(pendingShipment)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setChecked([...checked, pendingShipment]);
+                      } else {
+                        setChecked(
+                          checked.filter((item) => item !== pendingShipment)
+                        );
+                      }
+                    }}
+                  />
                 </td>
               </tr>
             ))}
@@ -91,6 +99,14 @@ const PendingShipments: React.FC<PendingShipmentsProps> = ({
         <PendingShipmentModal
           onClose={() => setIsModalOpen(false)}
           pendingShipment={pendingShipment as PendingShipment}
+        />
+      )}
+      {isShipperModalOpen && (
+        <ShippedDocketsModal
+          onClose={() => setIsShipperModalOpen(false)}
+          pendingShipments={checked}
+          updatePendingShipmentsState={updatePendingShipmentState}
+          updateSentOutDocketState={updateSentOutDocketState}
         />
       )}
     </div>

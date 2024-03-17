@@ -17,4 +17,5 @@ export interface OutDocket {
   transportOption?: TransportOption;
   filename?: string;
   products?: OutDocketProduct[];
+  outDocketId?: number;
 }

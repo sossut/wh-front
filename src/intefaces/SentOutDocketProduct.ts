@@ -1,6 +1,6 @@
 export interface SentOutDocketProduct {
   id?: number;
-  sentOutDocketId: number;
+  sentOutDocketId?: number;
   productId: number;
   orderedProductQuantity?: number;
   deliveredProductQuantity: number;
