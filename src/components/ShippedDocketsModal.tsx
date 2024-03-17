@@ -73,7 +73,11 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
       for (const pendingShipment of pendingShipments) {
         await deletePendingShipment(pendingShipment.id as number);
       }
-      const newPendingShipments = await getPendingShipments();
+      let newPendingShipments = await getPendingShipments();
+      if (!newPendingShipments) {
+        newPendingShipments = [];
+      }
+
       updatePendingShipmentsState(() => {
         return newPendingShipments;
       });

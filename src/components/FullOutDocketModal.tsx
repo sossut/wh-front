@@ -91,7 +91,7 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
       const newPendingShipment = await getPendingShipment(sod.id);
       console.log({ newPendingShipment });
       updateState((prevPendingShipments) => {
-        console.log({ prevPendingShipments });
+        prevPendingShipments = prevPendingShipments || [];
         const newPendingShipments = [
           ...prevPendingShipments,
           newPendingShipment
