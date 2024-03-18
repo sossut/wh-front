@@ -11,6 +11,7 @@ import { ProductHistory } from '../intefaces/ProductHistory';
 import { InDocket } from '../intefaces/InDocket';
 import { SentOutDocket } from '../intefaces/SentOutDocket';
 import { PendingShipment } from '../intefaces/PendingShipment';
+import { Client } from '../intefaces/Client';
 
 const fetchJson = async (url: string, options = {}) => {
   try {
@@ -778,4 +779,30 @@ const useInDockets = () => {
     deleteInDocket
   };
 };
-export { useLogin, useWarehouse, useProducts, useOutDockets, useInDockets };
+
+const useClients = () => {
+  const getClients = async (): Promise<Client[]> => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const clients = await fetchJson(`${apiUrl}/client`, options);
+      return clients;
+    } catch (error) {
+      console.error(error);
+      return {} as Client[];
+    }
+  };
+  return { getClients };
+};
+export {
+  useLogin,
+  useWarehouse,
+  useProducts,
+  useOutDockets,
+  useInDockets,
+  useClients
+};

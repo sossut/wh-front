@@ -5,6 +5,7 @@ import { Client } from '../intefaces/Client';
 import PendingShipmentModal from './PendingShipmentModal';
 import { SentOutDocket } from '../intefaces/SentOutDocket';
 import ShippedDocketsModal from './ShippedDocketsModal';
+import { OutDocket } from '../intefaces/OutDocket';
 
 export interface PendingShipmentsProps {
   updatePendingShipmentState: (
@@ -16,12 +17,16 @@ export interface PendingShipmentsProps {
   updateSentOutDocketState: (
     updateFunction: (prevDockets: SentOutDocket[]) => SentOutDocket[]
   ) => void;
+  updateOutDocketsState: (
+    updateFunction: (prevDockets: OutDocket[]) => OutDocket[]
+  ) => void;
 }
 
 const PendingShipments: React.FC<PendingShipmentsProps> = ({
   updatePendingShipmentState,
   pendingShipments,
-  updateSentOutDocketState
+  updateSentOutDocketState,
+  updateOutDocketsState
 }) => {
   // const [pendingShipments, setPendingShipments] = React.useState<
   //   PendingShipment[]
@@ -107,6 +112,7 @@ const PendingShipments: React.FC<PendingShipmentsProps> = ({
           pendingShipments={checked}
           updatePendingShipmentsState={updatePendingShipmentState}
           updateSentOutDocketState={updateSentOutDocketState}
+          updateOutDocketsState={updateOutDocketsState}
         />
       )}
     </div>

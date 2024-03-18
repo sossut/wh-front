@@ -19,24 +19,28 @@ const SentShipmentsAndDockets = () => {
     useOutDockets();
   React.useEffect(() => {
     (async () => {
-      const outDockets = await getOutDockets();
-      const filteredOutDockets = outDockets.map((docket) => {
-        return {
-          ...docket,
-          products: docket.products?.filter((product) => product.id !== null)
-        };
-      });
+      try {
+        const outDockets = await getOutDockets();
+        const filteredOutDockets = outDockets.map((docket) => {
+          return {
+            ...docket,
+            products: docket.products?.filter((product) => product.id !== null)
+          };
+        });
 
-      setOutDockets(
-        Array.isArray(filteredOutDockets) ? filteredOutDockets : []
-      );
-      const pendingShipments = await getPendingShipments();
+        setOutDockets(
+          Array.isArray(filteredOutDockets) ? filteredOutDockets : []
+        );
+        const pendingShipments = await getPendingShipments();
 
-      setPendingShipments(
-        Array.isArray(pendingShipments) ? pendingShipments : []
-      );
-      const sentOutDockets = await getSentOutDockets();
-      setSentOutDockets(Array.isArray(sentOutDockets) ? sentOutDockets : []);
+        setPendingShipments(
+          Array.isArray(pendingShipments) ? pendingShipments : []
+        );
+        const sentOutDockets = await getSentOutDockets();
+        setSentOutDockets(Array.isArray(sentOutDockets) ? sentOutDockets : []);
+      } catch (error) {
+        console.log(error);
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -71,6 +75,11 @@ const SentShipmentsAndDockets = () => {
           updateFunction: (prevDockets: SentOutDocket[]) => SentOutDocket[]
         ) => {
           setSentOutDockets(updateFunction(sentOutDockets));
+        }}
+        updateOutDocketsState={(
+          updateFunction: (prevDockets: OutDocket[]) => OutDocket[]
+        ) => {
+          setOutDockets(updateFunction(outDockets));
         }}
       />
 

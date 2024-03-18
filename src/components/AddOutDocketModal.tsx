@@ -1,8 +1,9 @@
 import React from 'react';
 import { OutDocket } from '../intefaces/OutDocket';
-import { useOutDockets, useProducts } from '../hooks/ApiHooks';
+import { useClients, useOutDockets, useProducts } from '../hooks/ApiHooks';
 import { TransportOption } from '../intefaces/TransportOption';
 import { Product } from '../intefaces/Product';
+import { Client } from '../intefaces/Client';
 
 export interface AddOutDocketModalProps {
   onClose: () => void;
@@ -21,15 +22,17 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
     updatedAt: new Date(),
     transportOptionId: 1, // Replace this with the actual transport option id
     status: 'open',
-    clientId: 1, // Replace this with the actual client id
+    client: { id: 0, name: '' },
     products: []
   });
   const { getTransportOptions, getOutDocket, postOutDocket } = useOutDockets();
+  const { getClients } = useClients();
   const { getProducts } = useProducts();
   const [transportOptions, setTransportOptions] = React.useState<
     TransportOption[]
   >([]);
   const [products, setProducts] = React.useState<Product[]>([]);
+  const [clients, setClients] = React.useState<Client[]>([]);
   const [file, setFile] = React.useState<File | null>(null);
   const [isAddingProduct, setIsAddingProduct] = React.useState(false);
 
@@ -44,6 +47,7 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
       clientId: outDocket.client?.id,
       products: outDocket.products
     };
+    console.log({ data });
     const postDocket = await postOutDocket(data);
     const newDocket = await getOutDocket(postDocket.id);
 
@@ -58,8 +62,10 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
     (async () => {
       const transportOptions = await getTransportOptions();
       setTransportOptions(transportOptions);
-      const products = await getProducts();
+      const products = (await getProducts()) || [];
       setProducts(products);
+      const clients = (await getClients()) || [];
+      setClients(clients);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -157,7 +163,13 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
                 });
               }}
             >
-              <option value="1">Testiasiakas</option>
+              <option value="0">Valitse asiakas</option>
+              {Array.isArray(clients) &&
+                clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.name}
+                  </option>
+                ))}
             </select>
           </div>
           <div>

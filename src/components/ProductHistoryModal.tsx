@@ -45,21 +45,23 @@ const ProductHistoryModal: React.FC<ProductHistoryModalProps> = ({
             </tr>
           </thead>
           <tbody>
-            {history.map((history) => (
-              <tr key={history.id}>
-                <td>
-                  {new Date(history.createdAt).toLocaleDateString('FI-fi')}
-                </td>
-                <td>{history.quantity}</td>
-                {history.outDocketNumber || history.inDocketNumber ? (
-                  <td>{history.outDocketNumber || history.inDocketNumber}</td>
-                ) : (
-                  <td></td>
-                )}
+            {Array.isArray(history) &&
+              history &&
+              history.map((history) => (
+                <tr key={history.id}>
+                  <td>
+                    {new Date(history.createdAt).toLocaleDateString('FI-fi')}
+                  </td>
+                  <td>{history.quantity}</td>
+                  {history.outDocketNumber || history.inDocketNumber ? (
+                    <td>{history.outDocketNumber || history.inDocketNumber}</td>
+                  ) : (
+                    <td></td>
+                  )}
 
-                <td></td>
-              </tr>
-            ))}
+                  <td></td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

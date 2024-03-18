@@ -16,13 +16,17 @@ export interface ShippedDocketsModalProps {
   updateSentOutDocketState: (
     updateFunction: (prevDockets: SentOutDocket[]) => SentOutDocket[]
   ) => void;
+  updateOutDocketsState: (
+    updateFunction: (prevDockets: OutDocket[]) => OutDocket[]
+  ) => void;
 }
 
 const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
   onClose,
   updatePendingShipmentsState,
   pendingShipments,
-  updateSentOutDocketState
+  updateSentOutDocketState,
+  updateOutDocketsState
 }) => {
   const [isSent, setIsSent] = React.useState(false);
   const [outDockets, setOutDockets] = React.useState<OutDocket[]>([]);
@@ -32,7 +36,8 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
     deletePendingShipment,
     getPendingShipments,
     getSentOutDockets,
-    postDaysShipments
+    postDaysShipments,
+    getOutDockets
   } = useOutDockets();
   const handleSent = async () => {
     try {
@@ -94,6 +99,10 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
 
       const outDockets = await getOutDocketsByIds(data);
       setOutDockets(outDockets);
+      const newOutDockets = (await getOutDockets()) || [];
+      updateOutDocketsState(() => {
+        return newOutDockets;
+      });
     } catch (error) {
       console.log(error);
     }
