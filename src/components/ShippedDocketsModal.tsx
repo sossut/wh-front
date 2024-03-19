@@ -30,6 +30,7 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
 }) => {
   const [isSent, setIsSent] = React.useState(false);
   const [outDockets, setOutDockets] = React.useState<OutDocket[]>([]);
+  const [daysShipments, setDaysShipments] = React.useState<DaysShipments>();
   const {
     postSentOutDocket,
     getOutDocketsByIds,
@@ -45,11 +46,12 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
         departedAt: new Date(),
         sentOutDockets: []
       };
+      setDaysShipments(dss);
       await Promise.all(
         pendingShipments.map(async (pendingShipment) => {
           const sentOutDocket: unknown = {
             docketId: pendingShipment.outDocket.outDocketId as number,
-            departureAt: pendingShipment.departureAt,
+            departureAt: daysShipments?.departedAt as Date,
             parcels: pendingShipment.parcels,
             transportOptionId: pendingShipment.transportOption.id,
 
@@ -69,11 +71,11 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
           const dssod: DaysShipmentsSentOutDocket = {
             sentOutDocketId: sod.id as number
           };
-          dss.sentOutDockets.push(dssod);
+          daysShipments?.sentOutDockets.push(dssod);
         })
       );
 
-      await postDaysShipments(dss);
+      await postDaysShipments(daysShipments);
       setIsSent(true);
       for (const pendingShipment of pendingShipments) {
         await deletePendingShipment(pendingShipment.id as number);
@@ -107,6 +109,9 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
       console.log(error);
     }
   };
+  React.useEffect(() => {
+    console.log(daysShipments);
+  }, [daysShipments]);
   console.log({ pendingShipments });
   return (
     <div className="big-modal">
@@ -115,6 +120,19 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
       </button>
       <div className="big-modal-header">
         <h2>Toimitetut Lähetykset</h2>
+        <input
+          type="date"
+          value={daysShipments?.departedAt?.toISOString().substr(0, 10)}
+          onChange={(e) => {
+            const newDate = new Date(e.target.value);
+            const newDaysShipments = {
+              ...daysShipments,
+              departedAt: newDate,
+              sentOutDockets: daysShipments?.sentOutDockets || []
+            };
+            setDaysShipments(newDaysShipments);
+          }}
+        />
       </div>
       <table className="common-table">
         <thead>
