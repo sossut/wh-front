@@ -25,6 +25,9 @@ const NavBar = () => {
         <NavLink to={'/saapuneet'} className="navbar-link">
           Saapuneet
         </NavLink>
+        <NavLink to={'/tunnit'} className="navbar-link">
+          Tunnit
+        </NavLink>
       </div>
       <NavBarProfile />
     </nav>

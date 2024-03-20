@@ -11,6 +11,7 @@ import Profile from './pages/Profile';
 import LoginPage from './pages/LoginPage';
 import { AppProvider } from './contexts/AppContext';
 import SentShipmentsAndDockets from './pages/SentShipmentsAndDockets';
+import Hours from './pages/Hours';
 
 const App: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
           <Route path="/saapuneet" element={<InDockets />} />
           <Route path="/profiili" element={<Profile />} />
           <Route path="/kirjaudu" element={<LoginPage />} />
+          <Route path="/tunnit" element={<Hours />} />
         </Routes>
       </AppProvider>
     </Router>
