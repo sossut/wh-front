@@ -4,8 +4,8 @@ import { InDocket } from '../intefaces/InDocket';
 import EditInDocketModal from '../components/EditInDocketModal';
 import AddInDocketModal from '../components/AddInDocketModal';
 
-const InDocketsPage = () => {
-  const { getInDockets, postInDocket } = useInDockets();
+const InDockets = () => {
+  const { getInDockets } = useInDockets();
   const [inDockets, setInDockets] = React.useState<InDocket[]>([]);
   const [inDocket, setInDocket] = React.useState<InDocket | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
@@ -61,7 +61,7 @@ const InDocketsPage = () => {
                       <td>{inDocket.docketNumber}</td>
                       <td>{inDocket.vendorId}</td>
                       <td>
-                        {new Date(inDocket.createdAt).toLocaleDateString(
+                        {new Date(inDocket.createdAt ?? "").toLocaleDateString(
                           'FI-fi'
                         )}
                       </td>
@@ -103,4 +103,4 @@ const InDocketsPage = () => {
   );
 };
 
-export default InDocketsPage;
+export default InDockets;
