@@ -104,6 +104,8 @@ const PendingShipments: React.FC<PendingShipmentsProps> = ({
         <PendingShipmentModal
           onClose={() => setIsModalOpen(false)}
           pendingShipment={pendingShipment as PendingShipment}
+          stateChanger={updatePendingShipmentState}
+          updateOutDocketsState={updateOutDocketsState}
         />
       )}
       {isShipperModalOpen && (

@@ -631,6 +631,27 @@ const useOutDockets = () => {
     }
   };
 
+  const putPendingShipment = async (id = 0, data: unknown) => {
+    try {
+      const options = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+      console.log(data);
+      const json = await fetchJson(
+        `${apiUrl}/sent-outdocket/pending/${id}`,
+        options
+      );
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const getTransportOptions = async () => {
     try {
       const options = {
@@ -686,6 +707,7 @@ const useOutDockets = () => {
     getSentOutDockets,
     postSentOutDocket,
     postPendingShipment,
+    putPendingShipment,
     getTransportOptions,
     postDaysShipments
   };
