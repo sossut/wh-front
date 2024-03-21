@@ -3,4 +3,5 @@ export interface DaysHours {
   arrivedAt?: Date;
   leftAt?: Date;
   workedHours?: number;
+  kilometers?: number;
 }

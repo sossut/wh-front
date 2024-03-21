@@ -5,4 +5,6 @@ export interface SentOutDocketProduct {
   orderedProductQuantity?: number;
   deliveredProductQuantity: number;
   outDocketProductId?: number;
+  name: string;
+  code: string;
 }

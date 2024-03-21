@@ -13,9 +13,15 @@ const SentOutDockets: React.FC<SentOutDocketsProps> = ({
   updateState,
   sentOutDockets
 }) => {
-  // const [sentOutDockets, setSentOutDockets] = React.useState<SentOutDocket[]>(
-  //   []
-  // );
+  const [outDocket, setOutDocket] = React.useState<SentOutDocket | null>(null);
+
+  const checkDocket =
+    (docket: SentOutDocket) =>
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.preventDefault();
+      console.log('check docket', docket);
+      setOutDocket(docket);
+    };
 
   const sortDockets = (dockets: SentOutDocket[]) => {
     if (!Array.isArray(dockets)) {
@@ -26,12 +32,14 @@ const SentOutDockets: React.FC<SentOutDocketsProps> = ({
       b.departureAt.toString().localeCompare(a.departureAt.toString())
     );
   };
+
   React.useEffect(() => {
     (async () => {
       sortDockets(sentOutDockets);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sentOutDockets]);
+
   return (
     <div className="common-body">
       <div className="common-header">
@@ -61,7 +69,9 @@ const SentOutDockets: React.FC<SentOutDocketsProps> = ({
                 <td>{sentOutDocket.transportOption.transportOption}</td>
                 <td>{sentOutDocket.parcels}</td>
                 <td>
-                  <button>View</button>
+                  <button onClick={() => checkDocket(sentOutDocket)}>
+                    Tarkastele
+                  </button>
                 </td>
               </tr>
             ))}

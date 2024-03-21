@@ -30,21 +30,6 @@ const OutDockets: React.FC<OutDocketsProps> = ({
   const [isFullModalOpen, setIsFullModalOpen] = React.useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
-  React.useEffect(() => {
-    // const fetchOutDockets = async () => {
-    //   const outDockets = await getOutDockets();
-    //   const filteredOutDockets = outDockets.map((docket) => {
-    //     return {
-    //       ...docket,
-    //       products: docket.products?.filter((product) => product.id !== null)
-    //     };
-    //   });
-    //   setOutDockets(filteredOutDockets);
-    //   console.log(outDockets);
-    // };
-    // fetchOutDockets();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   React.useEffect(() => {
     sortDockets(outDockets);
