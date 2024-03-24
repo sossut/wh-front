@@ -8,9 +8,7 @@ export interface PendingShipmentModalProps {
   onClose: () => void;
   pendingShipment: PendingShipment;
   stateChanger: (
-    updateFunction: (
-      prevPallets: PendingShipment[]
-    ) => PendingShipment[]
+    updateFunction: (prevPallets: PendingShipment[]) => PendingShipment[]
   ) => void;
   updateOutDocketsState: (
     updateFunction: (prevDockets: OutDocket[]) => OutDocket[]
@@ -28,21 +26,33 @@ const PendingShipmentModal: React.FC<PendingShipmentModalProps> = ({
   React.useEffect(() => {
     setPendingShipmentState(pendingShipment);
   }, [pendingShipment]);
-  const {putPendingShipment, deletePendingShipment, getPendingShipment, getOutDocket} = useOutDockets();
+  const {
+    putPendingShipment,
+    deletePendingShipment,
+    getPendingShipment,
+    getOutDocket
+  } = useOutDockets();
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     console.log('submit');
-    await putPendingShipment(pendingShipment.id as number, pendingShipmentState as PendingShipment);
-    const newPendingShipment = await getPendingShipment(pendingShipment.id as number);
+    await putPendingShipment(
+      pendingShipment.id as number,
+      pendingShipmentState as PendingShipment
+    );
+    const newPendingShipment = await getPendingShipment(
+      pendingShipment.id as number
+    );
     stateChanger((prevPallets) => {
       return prevPallets.map((p) => {
         if (p.id === pendingShipment.id) {
           return newPendingShipment;
         }
         return p;
-      });     
+      });
     });
-    const outDocket = await getOutDocket(pendingShipment.outDocket.id as number);
+    const outDocket = await getOutDocket(
+      pendingShipment.outDocket?.id as number
+    );
     updateOutDocketsState((prevDockets) => {
       return prevDockets.map((d) => {
         if (d.id === outDocket.id) {
@@ -51,12 +61,15 @@ const PendingShipmentModal: React.FC<PendingShipmentModalProps> = ({
         return d;
       });
     });
-  }
+  };
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     console.log('delete');
     await deletePendingShipment(pendingShipment.id as number);
-  }
+    stateChanger((prevPallets) => {
+      return prevPallets.filter((p) => p.id !== pendingShipment.id);
+    });
+  };
   return (
     <div className="big-modal">
       <button className="close-button" onClick={onClose}>
@@ -79,17 +92,16 @@ const PendingShipmentModal: React.FC<PendingShipmentModalProps> = ({
           </div>
           <div>
             <h3>Lähetenumero</h3>
-            <p>{pendingShipment.outDocket.docketNumber}</p>
+            <p>{pendingShipment.outDocket?.docketNumber}</p>
           </div>
           <div>
             <h3>Kuljetusmuoto</h3>
-            <p>{pendingShipment.transportOption.transportOption}</p>
+            <p>{pendingShipment.transportOption?.transportOption}</p>
           </div>
           <div>
             <h3>Kolleja</h3>
             <p>{pendingShipment.parcels}</p>
           </div>
-          
         </div>
       </div>
       <div className="big-modal-content">
@@ -133,8 +145,8 @@ const PendingShipmentModal: React.FC<PendingShipmentModalProps> = ({
             <button onClick={handleSubmit}>Tallenna</button>
           </tbody>
         </table>
-        
-          <button onClick={handleDelete}>Poista</button>
+
+        <button onClick={handleDelete}>Poista</button>
       </div>
     </div>
   );

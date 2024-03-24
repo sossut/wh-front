@@ -50,10 +50,10 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
       await Promise.all(
         pendingShipments.map(async (pendingShipment) => {
           const sentOutDocket: unknown = {
-            docketId: pendingShipment.outDocket.outDocketId as number,
+            docketId: pendingShipment.outDocket?.outDocketId as number,
             departureAt: daysShipments?.departedAt as Date,
             parcels: pendingShipment.parcels,
-            transportOptionId: pendingShipment.transportOption.id,
+            transportOptionId: pendingShipment.transportOption?.id,
 
             products: pendingShipment.products.map((product) => {
               return {
@@ -93,7 +93,7 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
         return sentOutDockets;
       });
       const ids = pendingShipments.map((pendingShipment) => {
-        return pendingShipment.outDocket.outDocketId as number;
+        return pendingShipment.outDocket?.outDocketId as number;
       });
       const data = {
         ids: ids
@@ -154,8 +154,8 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
                   )}
                 </td>
                 <td>{(pendingShipment.client as Client).name}</td>
-                <td>{pendingShipment.outDocket.docketNumber}</td>
-                <td>{pendingShipment.transportOption.transportOption}</td>
+                <td>{pendingShipment.outDocket?.docketNumber}</td>
+                <td>{pendingShipment.transportOption?.transportOption}</td>
                 <td>{pendingShipment.parcels}</td>
               </tr>
             ))}
@@ -170,7 +170,7 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
             {Array.isArray(pendingShipments) &&
               pendingShipments.map((pendingShipment) => (
                 <div key={pendingShipment.id}>
-                  <p>{pendingShipment.outDocket.docketNumber} </p>
+                  <p>{pendingShipment.outDocket?.docketNumber} </p>
                   <table>
                     <thead>
                       <tr>
@@ -180,7 +180,7 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
                     </thead>
                     <tbody>
                       <tr>
-                        <td>{pendingShipment.outDocket.docketNumber}</td>
+                        <td>{pendingShipment.outDocket?.docketNumber}</td>
                         <td>
                           {Array.isArray(outDockets) &&
                             outDockets.map((outDocket) => {

@@ -3,6 +3,7 @@ import { useInDockets } from '../hooks/ApiHooks';
 import { InDocket } from '../intefaces/InDocket';
 import EditInDocketModal from '../components/EditInDocketModal';
 import AddInDocketModal from '../components/AddInDocketModal';
+import { Vendor } from '../intefaces/Vendor';
 
 const InDockets = () => {
   const { getInDockets } = useInDockets();
@@ -10,11 +11,11 @@ const InDockets = () => {
   const [inDocket, setInDocket] = React.useState<InDocket | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
-  const [isFullModalOpen, setIsFullModalOpen] = React.useState(false);
+
   const handleState = (
     updateFunction: (prevDockets: InDocket[]) => InDocket[]
   ) => {
-    setInDockets(updateFunction);
+    setInDockets((prevDockets) => updateFunction(prevDockets));
   };
   const editInDocket = (inDocket: InDocket) => {
     setInDocket(inDocket);
@@ -23,10 +24,12 @@ const InDockets = () => {
   React.useEffect(() => {
     (async () => {
       const inDockets = await getInDockets();
-      setInDockets(inDockets);
+      console.log(inDockets);
+      setInDockets(Array.isArray(inDockets) ? inDockets : []);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <div className="dockets-body common-body">
       <header className="dockets-header common-header">
@@ -53,35 +56,24 @@ const InDockets = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                {Array.isArray(inDockets) &&
-                  inDockets &&
-                  inDockets.map((inDocket) => (
-                    <tr key={inDocket.id}>
-                      <td>{inDocket.docketNumber}</td>
-                      <td>{inDocket.vendorId}</td>
-                      <td>
-                        {new Date(inDocket.createdAt ?? "").toLocaleDateString(
-                          'FI-fi'
-                        )}
-                      </td>
-                      <td>
-                        <button onClick={() => setIsFullModalOpen(true)}>
-                          Näytä
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                <td>123456</td>
-                <td>Pacovis</td>
-                <td>12.12.2021</td>
-
-                <td>
-                  <button onClick={() => editInDocket({} as InDocket)}>
-                    Muokkaa
-                  </button>
-                </td>
-              </tr>
+              {Array.isArray(inDockets) &&
+                inDockets &&
+                inDockets.map((inDocket) => (
+                  <tr key={inDocket.id}>
+                    <td>{inDocket.docketNumber}</td>
+                    <td>{(inDocket.vendor as Vendor).name}</td>
+                    <td>
+                      {new Date(inDocket.createdAt ?? '').toLocaleDateString(
+                        'FI-fi'
+                      )}
+                    </td>
+                    <td>
+                      <button onClick={() => editInDocket(inDocket)}>
+                        Näytä
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>

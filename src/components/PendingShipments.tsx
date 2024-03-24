@@ -73,8 +73,8 @@ const PendingShipments: React.FC<PendingShipmentsProps> = ({
                   )}
                 </td>
                 <td>{(pendingShipment.client as Client).name}</td>
-                <td>{pendingShipment.outDocket.docketNumber}</td>
-                <td>{pendingShipment.transportOption.transportOption}</td>
+                <td>{pendingShipment.outDocket?.docketNumber}</td>
+                <td>{pendingShipment.transportOption?.transportOption}</td>
                 <td>{pendingShipment.parcels}</td>
                 <td>
                   <button onClick={() => handleModalOpen(pendingShipment)}>

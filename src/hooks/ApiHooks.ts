@@ -12,6 +12,8 @@ import { InDocket } from '../intefaces/InDocket';
 import { SentOutDocket } from '../intefaces/SentOutDocket';
 import { PendingShipment } from '../intefaces/PendingShipment';
 import { Client } from '../intefaces/Client';
+import { Vendor } from '../intefaces/Vendor';
+import { DaysHours } from '../intefaces/DaysHours';
 
 const fetchJson = async (url: string, options = {}) => {
   try {
@@ -820,11 +822,123 @@ const useClients = () => {
   };
   return { getClients };
 };
+
+const useVendors = () => {
+  const getVendors = async (): Promise<Vendor[]> => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const vendors = await fetchJson(`${apiUrl}/vendor`, options);
+      return vendors;
+    } catch (error) {
+      console.error(error);
+      return {} as Vendor[];
+    }
+  };
+  return { getVendors };
+};
+
+const useDaysHours = () => {
+  const getDaysHoursList = async (): Promise<DaysHours[]> => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const daysHours = await fetchJson(`${apiUrl}/days-hours`, options);
+      return daysHours;
+    } catch (error) {
+      console.error(error);
+      return {} as DaysHours[];
+    }
+  };
+  const getDaysHours = async (id = 0): Promise<DaysHours> => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const daysHours = await fetchJson(`${apiUrl}/days-hours/${id}`, options);
+      return daysHours;
+    } catch (error) {
+      console.error(error);
+      return {} as DaysHours;
+    }
+  };
+  const postDaysHours = async (data: unknown) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+      const json = await fetchJson(`${apiUrl}/days-hours`, options);
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const putDaysHours = async (id = 0, data: unknown) => {
+    try {
+      const options = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+      const json = await fetchJson(`${apiUrl}/days-hours/${id}`, options);
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteDaysHours = async (id = 0) => {
+    try {
+      const options = {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const json = await fetchJson(`${apiUrl}/days-hours/${id}`, options);
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return {
+    getDaysHoursList,
+    getDaysHours,
+    postDaysHours,
+    putDaysHours,
+    deleteDaysHours
+  };
+};
+
 export {
   useLogin,
   useWarehouse,
   useProducts,
   useOutDockets,
   useInDockets,
-  useClients
+  useClients,
+  useVendors,
+  useDaysHours
 };

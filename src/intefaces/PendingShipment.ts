@@ -6,16 +6,16 @@ import { TransportOption } from './TransportOption';
 import { User } from './User';
 
 export interface PendingShipment {
-  id: number;
+  id?: number;
   docketId: number | OutDocket;
-  transportOptionId: number | TransportOption;
-  userId: number | User;
-  createdAt: Date;
-  status: 'open' | 'closed';
+  transportOptionId?: number | TransportOption;
+  userId?: number | User;
+  createdAt?: Date;
+  status?: 'open' | 'closed';
   parcels: number;
   departureAt: Date;
   products: PendingShipmentProduct[];
-  client: number | Client;
-  outDocket: OutDocket;
-  transportOption: TransportOption;
+  client?: number | Client;
+  outDocket?: OutDocket;
+  transportOption?: TransportOption;
 }

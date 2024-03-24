@@ -3,6 +3,7 @@ import { OutDocket } from '../intefaces/OutDocket';
 import { useOutDockets, useProducts } from '../hooks/ApiHooks';
 import { TransportOption } from '../intefaces/TransportOption';
 import { Product } from '../intefaces/Product';
+import { OutDocketProduct } from '../intefaces/OutDocketProduct';
 
 export interface EditOutDocketProps {
   outDocket: OutDocket;
@@ -136,6 +137,15 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
         onClose();
       }
     }
+  };
+
+  const removeProduct = (productToRemove: OutDocketProduct) => {
+    setOutDocketState((prevState) => ({
+      ...prevState,
+      products: prevState.products?.filter(
+        (product) => product.id !== productToRemove.id
+      )
+    }));
   };
 
   return (
@@ -307,7 +317,12 @@ const EditOutDocket: React.FC<EditOutDocketProps> = ({
                         </td>
                         <td>{product.quantityOption?.quantityOption}</td>
                         <td>
-                          <button>Poista</button>
+                          <button
+                            type="button"
+                            onClick={() => removeProduct(product)}
+                          >
+                            Poista
+                          </button>
                         </td>
                       </tr>
                     );

@@ -61,7 +61,7 @@ const FullOutDocketModal: React.FC<FullOutDocketModalProps> = ({
         .map((key) => {
           return {
             productId: parseInt(key),
-            deliveredProductQuantity:
+            collectedQuantities:
               collectedQuantities[parseInt(key)].collectedQuantity,
             outDocketProductId:
               collectedQuantities[parseInt(key)].outDocketProductId

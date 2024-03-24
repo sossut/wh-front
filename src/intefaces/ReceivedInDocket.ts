@@ -9,6 +9,7 @@ export interface ReceivedInDocket {
   arrivalAt: Date;
   createdAt: Date;
   userId: number | User;
-  vendor: Vendor;
+  vendor?: Vendor;
+  vendorId: number | Vendor;
   products: ReceivedInDocketProduct[];
 }

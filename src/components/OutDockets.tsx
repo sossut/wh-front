@@ -41,8 +41,8 @@ const OutDockets: React.FC<OutDocketsProps> = ({
       console.error('sortDockets was called with a non-array value:', dockets);
       return [];
     }
-    return dockets.sort((a, b) =>
-      b.docketNumber.toString().localeCompare(a.docketNumber.toString())
+    return dockets.sort(
+      (a, b) => parseInt(b.docketNumber) - parseInt(a.docketNumber)
     );
   };
 
@@ -159,6 +159,7 @@ const OutDockets: React.FC<OutDocketsProps> = ({
         <AddOutDocketModal
           stateChanger={updateDocketsState}
           onClose={() => setIsAddModalOpen(false)}
+          pendingStateChanger={updateState}
         />
       )}
     </div>

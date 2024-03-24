@@ -4,17 +4,23 @@ import { useClients, useOutDockets, useProducts } from '../hooks/ApiHooks';
 import { TransportOption } from '../intefaces/TransportOption';
 import { Product } from '../intefaces/Product';
 import { Client } from '../intefaces/Client';
+import { OutDocketProduct } from '../intefaces/OutDocketProduct';
+import { PendingShipment } from '../intefaces/PendingShipment';
 
 export interface AddOutDocketModalProps {
   onClose: () => void;
   stateChanger: (
     updateFunction: (prevDockets: OutDocket[]) => OutDocket[]
   ) => void;
+  pendingStateChanger: (
+    updateFunction: (prevDockets: PendingShipment[]) => PendingShipment[]
+  ) => void;
 }
 
 const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
   onClose,
-  stateChanger
+  stateChanger,
+  pendingStateChanger
 }) => {
   const [outDocket, setOutDocket] = React.useState<OutDocket>({
     docketNumber: '',
@@ -25,7 +31,13 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
     client: { id: 0, name: '' },
     products: []
   });
-  const { getTransportOptions, getOutDocket, postOutDocket } = useOutDockets();
+  const {
+    getTransportOptions,
+    getOutDocket,
+    postOutDocket,
+    postPendingShipment,
+    getPendingShipment
+  } = useOutDockets();
   const { getClients } = useClients();
   const { getProducts } = useProducts();
   const [transportOptions, setTransportOptions] = React.useState<
@@ -35,8 +47,8 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
   const [clients, setClients] = React.useState<Client[]>([]);
   const [file, setFile] = React.useState<File | null>(null);
   const [isAddingProduct, setIsAddingProduct] = React.useState(false);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const [parcelQuantity, setParcelQuantity] = React.useState<number>(0);
+  const handleSubmit = async (e: React.MouseEvent) => {
     e.preventDefault();
     console.log('submit');
     console.log(outDocket);
@@ -48,14 +60,55 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
       products: outDocket.products
     };
     console.log({ data });
+    if (!data.docketNumber) {
+      alert('Anna lähetteen numero');
+      return;
+    }
     const postDocket = await postOutDocket(data);
     const newDocket = await getOutDocket(postDocket.id);
-
+    const products = data.products || [];
+    let deliveredNotZero = false;
+    for (const product of products) {
+      if (product.deliveredProductQuantity > 0) {
+        deliveredNotZero = true;
+        break;
+      }
+    }
+    if (deliveredNotZero) {
+      const newPendingShipment: PendingShipment = {
+        docketId: newDocket.id as number,
+        parcels: parcelQuantity,
+        products: products.map((product) => {
+          let odpid = product.outDocketProductId;
+          newDocket.products?.forEach((p) => {
+            if (p.id === product.id) {
+              odpid = p.outDocketProductId;
+            }
+          });
+          return {
+            productId: product.id as number,
+            collectedProductQuantity: product.deliveredProductQuantity,
+            outDocketProductId: odpid as number
+          };
+        }),
+        departureAt: new Date(),
+        transportOptionId: outDocket.transportOptionId as number
+      };
+      const psId = await postPendingShipment(newPendingShipment);
+      const newPs = await getPendingShipment(psId.id as number);
+      pendingStateChanger((prevPallets) => {
+        return [...prevPallets, newPs];
+      });
+    }
     stateChanger((prevDockets) => {
       return [...prevDockets, newDocket];
     });
 
     onClose();
+  };
+
+  const handleFormDefault = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
   };
 
   React.useEffect(() => {
@@ -96,9 +149,12 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
     const code = selectedOption.dataset.code;
     const name = selectedOption.dataset.name;
     const orderedProductQuantity = form.orderedProductQuantity.value;
-    const deliveredProductQuantity = 0;
+    let deliveredProductQuantity = form.deliveredProductQuantity.value;
     const quantityOption = selectedOption.dataset.qoption;
-
+    if (deliveredProductQuantity === '') {
+      deliveredProductQuantity = '0';
+    }
+    console.log({ deliveredProductQuantity });
     // Add the new product to the state
     setOutDocket({
       ...outDocket,
@@ -125,6 +181,14 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
 
     setIsAddingProduct(false);
   };
+  const removeProduct = (productToRemove: OutDocketProduct) => {
+    setOutDocket((prevState) => ({
+      ...prevState,
+      products: prevState.products?.filter(
+        (product) => product.id !== productToRemove.id
+      )
+    }));
+  };
 
   return (
     <div className="big-modal">
@@ -135,7 +199,7 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
         <h3>Luo lähete</h3>
       </div>
       <div className="modal-content">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleFormDefault}>
           <div>
             <label htmlFor="docketNumber">Lähetteen numero</label>
             <input
@@ -243,6 +307,7 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
                           <input
                             min={0}
                             max={product.orderedProductQuantity}
+                            value={product.deliveredProductQuantity}
                             onChange={(e) => {
                               setOutDocket({
                                 ...outDocket,
@@ -287,7 +352,12 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
                         </td>
                         <td>{product.quantityOption?.quantityOption}</td>
                         <td>
-                          <button>Poista</button>
+                          <button
+                            type="button"
+                            onClick={(e) => removeProduct(product)}
+                          >
+                            Poista
+                          </button>
                         </td>
                       </tr>
                     );
@@ -299,8 +369,21 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
               Lisää tuote
             </button>
           </div>
-          <button type="submit">Tallenna</button>
+          <button onClick={handleSubmit} type="button">
+            Tallenna
+          </button>
         </form>
+        <div>
+          <p>Täytä tämä jos lähete kerätty jo</p>
+          <label htmlFor="parcelQuantity">Pakettien määrä</label>
+          <input
+            type="number"
+            id="parcelQuantity"
+            onChange={(e) => {
+              setParcelQuantity(Number(e.target.value));
+            }}
+          ></input>
+        </div>
         {isAddingProduct && (
           <div>
             <h2>Lisää uusi tuote</h2>
@@ -324,7 +407,10 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
                 Tilattu määrä:
                 <input type="number" name="orderedProductQuantity" />
               </label>
-
+              <label>
+                Toimitettu määrä:
+                <input type="number" name="deliveredProductQuantity" />
+              </label>
               <input type="submit" value="Lisää tuote" />
             </form>
           </div>

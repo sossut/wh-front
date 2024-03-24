@@ -1,7 +1,9 @@
 import React from 'react';
 import { InDocket } from '../intefaces/InDocket';
-import { useInDockets, useProducts } from '../hooks/ApiHooks';
+import { useInDockets, useProducts, useVendors } from '../hooks/ApiHooks';
 import { Product } from '../intefaces/Product';
+import { InDocketProduct } from '../intefaces/InDocketProduct';
+import { Vendor } from '../intefaces/Vendor';
 
 export interface AddInDocketModalProps {
   onClose: () => void;
@@ -16,7 +18,7 @@ const AddInDocketModal: React.FC<AddInDocketModalProps> = ({
 }) => {
   const [inDocket, setInDocket] = React.useState<InDocket>({
     docketNumber: '',
-    arrivalAt: new Date(),
+    arrivedAt: new Date(),
     vendor: {
       id: 0,
       name: ''
@@ -25,11 +27,32 @@ const AddInDocketModal: React.FC<AddInDocketModalProps> = ({
   });
   const [isAddingProduct, setIsAddingProduct] = React.useState(false);
   const [products, setProducts] = React.useState<Product[]>([]);
+  const [vendors, setVendors] = React.useState<Vendor[]>([]);
   const { postInDocket, getInDocket } = useInDockets();
+  const { getVendors } = useVendors();
   const { getProducts } = useProducts();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const id = await postInDocket(inDocket);
+    const iD: InDocket = {
+      docketNumber: inDocket.docketNumber,
+      arrivedAt: inDocket.arrivedAt,
+      vendorId: inDocket.vendor.id,
+      products: inDocket.products,
+      vendor: inDocket.vendor
+    };
+    if (!iD.vendorId) {
+      alert('Valitse toimittaja');
+      return;
+    }
+    if (!iD.products || iD.products.length === 0) {
+      alert('Lisää tuotteita saapumiserään');
+      return;
+    }
+    if (!iD.docketNumber) {
+      alert('Anna saapumiserän numero');
+      return;
+    }
+    const id = await postInDocket(iD);
     const newInDocket = await getInDocket(id.id);
     stateChange((prevDockets) => {
       return [...prevDockets, newInDocket];
@@ -40,6 +63,8 @@ const AddInDocketModal: React.FC<AddInDocketModalProps> = ({
     (async () => {
       const products = await getProducts();
       setProducts(products);
+      const vendors = await getVendors();
+      setVendors(vendors);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -47,14 +72,11 @@ const AddInDocketModal: React.FC<AddInDocketModalProps> = ({
     e.preventDefault();
     setIsAddingProduct(true);
   };
-  const removeProduct = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.preventDefault();
-    const id = e.currentTarget.dataset.id;
+  const removeProduct = (product: InDocketProduct) => {
+    const id = product.id;
     setInDocket({
       ...inDocket,
-      products: inDocket.products?.filter((p) => p.id !== parseInt(id ?? ''))
+      products: inDocket.products?.filter((p) => p.id !== id)
     });
   };
   const handleAddProduct = (e: React.FormEvent<HTMLFormElement>) => {
@@ -74,7 +96,7 @@ const AddInDocketModal: React.FC<AddInDocketModalProps> = ({
     const code = selectedOption.dataset.code;
     const name = selectedOption.dataset.name;
     const orderedProductQuantity = form.orderedProductQuantity.value;
-    const deliveredProductQuantity = 0;
+    const receivedProductQuantity = form.receivedProductQuantity.value;
     const quantityOption = selectedOption.dataset.qoption;
 
     // Add the new product to the state
@@ -87,7 +109,7 @@ const AddInDocketModal: React.FC<AddInDocketModalProps> = ({
           code,
           name,
           orderedProductQuantity,
-          deliveredProductQuantity,
+          receivedProductQuantity,
           quantityOption: {
             id: parseInt(quantityOption),
             quantityOption: 'pak' // Replace this with the actual quantity option
@@ -103,7 +125,9 @@ const AddInDocketModal: React.FC<AddInDocketModalProps> = ({
 
     setIsAddingProduct(false);
   };
-
+  React.useEffect(() => {
+    console.log(inDocket);
+  }, [inDocket]);
   return (
     <div className="big-modal">
       <button className="close-button" onClick={onClose}>
@@ -132,8 +156,8 @@ const AddInDocketModal: React.FC<AddInDocketModalProps> = ({
             <label htmlFor="in-docket-date">Saapumiserän päivämäärä</label>
             <input
               value={
-                inDocket.arrivalAt
-                  ? new Date(inDocket.arrivalAt).toLocaleDateString('FI-fi')
+                inDocket.arrivedAt
+                  ? new Date(inDocket.arrivedAt).toISOString().split('T')[0]
                   : ''
               }
               type="date"
@@ -141,15 +165,37 @@ const AddInDocketModal: React.FC<AddInDocketModalProps> = ({
               onChange={(e) =>
                 setInDocket({
                   ...inDocket,
-                  arrivalAt: new Date(e.target.value)
+                  arrivedAt: new Date(e.target.value)
                 })
               }
             />
           </div>
           <div>
             <label htmlFor="in-docket-vendor">Toimittaja</label>
-            <select>
+            <select
+              onChange={(e) => {
+                const vendorId = e.target.value;
+                const vendor = vendors.find((v) => v.id === parseInt(vendorId));
+                if (vendor) {
+                  setInDocket({
+                    ...inDocket,
+                    vendor: {
+                      id: vendor.id,
+                      name: vendor.name
+                    }
+                  });
+                }
+              }}
+            >
               <option value="">Valitse toimittaja</option>
+              {Array.isArray(vendors) &&
+                vendors.map((vendor) => {
+                  return (
+                    <option key={vendor.id} value={vendor.id}>
+                      {vendor.name}
+                    </option>
+                  );
+                })}
             </select>
           </div>
           <div>
@@ -178,6 +224,7 @@ const AddInDocketModal: React.FC<AddInDocketModalProps> = ({
                           <input
                             min={0}
                             max={product.orderedProductQuantity}
+                            value={product.receivedProductQuantity}
                             onChange={(e) => {
                               setInDocket({
                                 ...inDocket,
@@ -185,7 +232,7 @@ const AddInDocketModal: React.FC<AddInDocketModalProps> = ({
                                   if (p.id === product.id) {
                                     return {
                                       ...p,
-                                      deliveredProductQuantity: Number(
+                                      receivedProductQuantity: Number(
                                         e.target.value
                                       )
                                     };
@@ -222,7 +269,9 @@ const AddInDocketModal: React.FC<AddInDocketModalProps> = ({
                         </td>
                         <td>{product.quantityOption?.quantityOption}</td>
                         <td>
-                          <button onClick={removeProduct}>Poista</button>
+                          <button onClick={() => removeProduct(product)}>
+                            Poista
+                          </button>
                         </td>
                       </tr>
                     );
@@ -234,6 +283,7 @@ const AddInDocketModal: React.FC<AddInDocketModalProps> = ({
               Lisää tuote
             </button>
           </div>
+          <button type="submit">Lisää saapumiserä</button>
         </form>
         {isAddingProduct && (
           <div>
@@ -258,6 +308,10 @@ const AddInDocketModal: React.FC<AddInDocketModalProps> = ({
               <label>
                 Tilattu määrä:
                 <input type="number" name="orderedProductQuantity" />
+              </label>
+              <label>
+                Toimitettu määrä:
+                <input type="number" name="receivedProductQuantity" />
               </label>
 
               <input type="submit" value="Lisää tuote" />
