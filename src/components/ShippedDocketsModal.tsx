@@ -177,23 +177,23 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {pendingShipments.map((pendingShipment) => {
-                      const allProductsDelivered =
-                        pendingShipment.outDocket?.products?.every(
+                    {Array.isArray(outDockets) &&
+                      outDockets.map((outDocket) => {
+                        const allProductsDelivered = outDocket.products?.every(
                           (product) =>
                             product.deliveredProductQuantity ===
                             product.orderedProductQuantity
                         );
 
-                      return (
-                        <tr key={pendingShipment.id}>
-                          <td>{pendingShipment.outDocket?.docketNumber}</td>
-                          <td>
-                            {allProductsDelivered ? 'TM' : 'Something else'}
-                          </td>
-                        </tr>
-                      );
-                    })}
+                        return (
+                          <tr key={outDocket.id}>
+                            <td>{outDocket?.docketNumber}</td>
+                            <td>
+                              {allProductsDelivered ? 'TM' : 'Something else'}
+                            </td>
+                          </tr>
+                        );
+                      })}
                   </tbody>
                 </table>
               </div>
