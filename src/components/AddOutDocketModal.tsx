@@ -69,7 +69,7 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
     const products = data.products || [];
     let deliveredNotZero = false;
     for (const product of products) {
-      if (product.deliveredProductQuantity > 0) {
+      if ((product.collectedProductQuantity ?? 0) > 0) {
         deliveredNotZero = true;
         break;
       }
@@ -87,7 +87,8 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
           });
           return {
             productId: product.id as number,
-            collectedProductQuantity: product.deliveredProductQuantity,
+            collectedProductQuantity:
+              product.collectedProductQuantity as number,
             outDocketProductId: odpid as number
           };
         }),
@@ -149,11 +150,10 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
     const code = selectedOption.dataset.code;
     const name = selectedOption.dataset.name;
     const orderedProductQuantity = form.orderedProductQuantity.value;
-    let deliveredProductQuantity = form.deliveredProductQuantity.value;
+    const deliveredProductQuantity = 0;
+    const collectedProductQuantity = form.collectedProductQuantity.value;
     const quantityOption = selectedOption.dataset.qoption;
-    if (deliveredProductQuantity === '') {
-      deliveredProductQuantity = '0';
-    }
+
     console.log({ deliveredProductQuantity });
     // Add the new product to the state
     setOutDocket({
@@ -166,6 +166,7 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
           name,
           orderedProductQuantity,
           deliveredProductQuantity,
+          collectedProductQuantity,
           quantityOption: {
             id: parseInt(quantityOption),
             quantityOption: 'pak' // Replace this with the actual quantity option
@@ -288,7 +289,7 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
                   <tr>
                     <th>Tuotenumero</th>
                     <th>Tuote</th>
-                    <th>Toimitettu Määrä</th>
+                    <th>Kerätty Määrä</th>
                     <th>Tilattu määrä</th>
                     <th>Yksikkö</th>
                     <th></th>
@@ -307,7 +308,7 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
                           <input
                             min={0}
                             max={product.orderedProductQuantity}
-                            value={product.deliveredProductQuantity}
+                            value={product.collectedProductQuantity}
                             onChange={(e) => {
                               setOutDocket({
                                 ...outDocket,
@@ -408,8 +409,8 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
                 <input type="number" name="orderedProductQuantity" />
               </label>
               <label>
-                Toimitettu määrä:
-                <input type="number" name="deliveredProductQuantity" />
+                Kerätty määrä:
+                <input type="number" name="collectedProductQuantity" />
               </label>
               <input type="submit" value="Lisää tuote" />
             </form>
