@@ -167,41 +167,37 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
         <div>
           <h3>Kopioi lähteneet</h3>
           <div>
-            {Array.isArray(pendingShipments) &&
-              pendingShipments.map((pendingShipment) => (
-                <div key={pendingShipment.id}>
-                  <p>{pendingShipment.outDocket?.docketNumber} </p>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Lähetenumero</th>
-                        <th>Tila</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>{pendingShipment.outDocket?.docketNumber}</td>
-                        <td>
-                          {Array.isArray(outDockets) &&
-                            outDockets.map((outDocket) => {
-                              return outDocket.products?.every(
-                                (product) =>
-                                  product.deliveredProductQuantity ===
-                                  product.orderedProductQuantity
-                              )
-                                ? 'TM'
-                                : // Do something else here
-                                  'Something else';
-                            })}
-                        </td>
-                      </tr>
-                    </tbody>
-                    {/* {pendingShipment.products.map((product) => (
-                      
-                    ))} */}
-                  </table>
-                </div>
-              ))}
+            {Array.isArray(pendingShipments) && (
+              <div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Lähetenumero</th>
+                      <th>Tila</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pendingShipments.map((pendingShipment) => {
+                      const allProductsDelivered =
+                        pendingShipment.outDocket?.products?.every(
+                          (product) =>
+                            product.deliveredProductQuantity ===
+                            product.orderedProductQuantity
+                        );
+
+                      return (
+                        <tr key={pendingShipment.id}>
+                          <td>{pendingShipment.outDocket?.docketNumber}</td>
+                          <td>
+                            {allProductsDelivered ? 'TM' : 'Something else'}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       )}
