@@ -189,7 +189,22 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
                           <tr key={outDocket.id}>
                             <td>{outDocket?.docketNumber}</td>
                             <td>
-                              {allProductsDelivered ? 'TM' : 'Something else'}
+                              {allProductsDelivered ? (
+                                'TM'
+                              ) : (
+                                <div>
+                                  {outDocket.products?.map((product) => {
+                                    return (
+                                      <div key={product.id}>
+                                        {product.code}{' '}
+                                        {product.deliveredProductQuantity} /{' '}
+                                        {product.orderedProductQuantity}
+                                      </div>
+                                    );
+                                  })}
+                                  {''}
+                                </div>
+                              )}
                             </td>
                           </tr>
                         );
