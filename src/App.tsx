@@ -12,6 +12,7 @@ import LoginPage from './pages/LoginPage';
 import { AppProvider } from './contexts/AppContext';
 import SentShipmentsAndDockets from './pages/SentShipmentsAndDockets';
 import Hours from './pages/Hours';
+import ClientsAndVendors from './pages/ClientsAndVendors';
 
 const App: React.FC = () => {
   return (
@@ -27,6 +28,10 @@ const App: React.FC = () => {
           <Route path="/profiili" element={<Profile />} />
           <Route path="/kirjaudu" element={<LoginPage />} />
           <Route path="/tunnit" element={<Hours />} />
+          <Route
+            path="asiakkaat-ja-toimittajat"
+            element={<ClientsAndVendors />}
+          />
         </Routes>
       </AppProvider>
     </Router>

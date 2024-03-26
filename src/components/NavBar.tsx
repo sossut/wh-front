@@ -28,6 +28,9 @@ const NavBar = () => {
         <NavLink to={'/tunnit'} className="navbar-link">
           Tunnit
         </NavLink>
+        <NavLink to={'asiakkaat-ja-toimittajat'} className="navbar-link">
+          Asiakkaat ja toimittajat
+        </NavLink>
       </div>
       <NavBarProfile />
     </nav>
