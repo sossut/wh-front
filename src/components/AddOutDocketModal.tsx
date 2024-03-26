@@ -98,11 +98,12 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
       const psId = await postPendingShipment(newPendingShipment);
       const newPs = await getPendingShipment(psId.id as number);
       pendingStateChanger((prevPallets) => {
-        return [...prevPallets, newPs];
+        return [...(Array.isArray(prevPallets) ? prevPallets : []), newPs];
       });
     }
+    const nod = await getOutDocket(newDocket.id);
     stateChanger((prevDockets) => {
-      return [...prevDockets, newDocket];
+      return [...prevDockets, nod];
     });
 
     onClose();

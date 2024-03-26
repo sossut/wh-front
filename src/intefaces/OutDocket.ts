@@ -18,4 +18,5 @@ export interface OutDocket {
   filename?: string;
   products?: OutDocketProduct[];
   outDocketId?: number;
+  backOrder?: boolean;
 }

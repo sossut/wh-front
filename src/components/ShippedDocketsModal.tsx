@@ -19,6 +19,9 @@ export interface ShippedDocketsModalProps {
   updateOutDocketsState: (
     updateFunction: (prevDockets: OutDocket[]) => OutDocket[]
   ) => void;
+  updateCheckedState: (
+    updateFunction: (prevDockets: PendingShipment[]) => PendingShipment[]
+  ) => void;
 }
 
 const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
@@ -26,11 +29,13 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
   updatePendingShipmentsState,
   pendingShipments,
   updateSentOutDocketState,
-  updateOutDocketsState
+  updateOutDocketsState,
+  updateCheckedState
 }) => {
   const [isSent, setIsSent] = React.useState(false);
   const [outDockets, setOutDockets] = React.useState<OutDocket[]>([]);
   const [daysShipments, setDaysShipments] = React.useState<DaysShipments>();
+  const [backOrderArray, setBackOrderArray] = React.useState<OutDocket[]>([]);
   const {
     postSentOutDocket,
     getOutDocketsByIds,
@@ -38,7 +43,8 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
     getPendingShipments,
     getSentOutDockets,
     postDaysShipments,
-    getOutDockets
+    getOutDockets,
+    getOutDocketsBackOrder
   } = useOutDockets();
   const handleSent = async () => {
     try {
@@ -47,6 +53,14 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
         sentOutDockets: []
       };
       setDaysShipments(dss);
+      const ids = pendingShipments.map((pendingShipment) => {
+        return pendingShipment.outDocket?.outDocketId as number;
+      });
+      const data = {
+        ids: ids
+      };
+      const bOArray = await getOutDocketsBackOrder(data);
+      setBackOrderArray(bOArray);
       await Promise.all(
         pendingShipments.map(async (pendingShipment) => {
           const sentOutDocket: unknown = {
@@ -92,18 +106,15 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
       updateSentOutDocketState(() => {
         return sentOutDockets;
       });
-      const ids = pendingShipments.map((pendingShipment) => {
-        return pendingShipment.outDocket?.outDocketId as number;
-      });
-      const data = {
-        ids: ids
-      };
 
       const outDockets = await getOutDocketsByIds(data);
       setOutDockets(outDockets);
       const newOutDockets = (await getOutDockets()) || [];
       updateOutDocketsState(() => {
         return newOutDockets;
+      });
+      updateCheckedState(() => {
+        return [];
       });
     } catch (error) {
       console.log(error);
@@ -184,18 +195,30 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
                             product.deliveredProductQuantity ===
                             product.orderedProductQuantity
                         );
+                        const isBackOrder = backOrderArray.some(
+                          (backOrder) =>
+                            backOrder.id === outDocket.id && backOrder.backOrder
+                        );
 
                         return (
                           <tr key={outDocket.id}>
-                            <td>{outDocket?.docketNumber}</td>
+                            {isBackOrder ? (
+                              <td>
+                                {outDocket.docketNumber}
+                                {'JT'}
+                              </td>
+                            ) : (
+                              <td>{outDocket.docketNumber}</td>
+                            )}
+
                             <td>
                               {allProductsDelivered ? (
                                 'TM'
                               ) : (
                                 <div>
-                                  {outDocket.products?.map((product) => {
+                                  {outDocket.products?.map((product, index) => {
                                     return (
-                                      <div key={product.id}>
+                                      <div key={index}>
                                         {product.code}{' '}
                                         {product.deliveredProductQuantity} /{' '}
                                         {product.orderedProductQuantity}

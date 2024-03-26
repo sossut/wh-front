@@ -44,6 +44,11 @@ const PendingShipments: React.FC<PendingShipmentsProps> = ({
     console.log({ checked });
     setIsShipperModalOpen(true);
   };
+  const updateCheckedState = (
+    updateFunction: (prevDockets: PendingShipment[]) => PendingShipment[]
+  ) => {
+    setChecked(updateFunction(checked));
+  };
   return (
     <div className="common-body">
       <div className="common-header">
@@ -115,6 +120,7 @@ const PendingShipments: React.FC<PendingShipmentsProps> = ({
           updatePendingShipmentsState={updatePendingShipmentState}
           updateSentOutDocketState={updateSentOutDocketState}
           updateOutDocketsState={updateOutDocketsState}
+          updateCheckedState={updateCheckedState}
         />
       )}
     </div>

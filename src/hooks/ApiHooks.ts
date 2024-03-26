@@ -455,6 +455,29 @@ const useOutDockets = () => {
     }
   };
 
+  const getOutDocketsBackOrder = async (
+    data: unknown
+  ): Promise<OutDocket[]> => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+      const outDockets = await fetchJson(
+        `${apiUrl}/outdocket/back-order`,
+        options
+      );
+      return outDockets;
+    } catch (error) {
+      console.error(error);
+      return {} as OutDocket[];
+    }
+  };
+
   const getOutDocket = async (id = 0): Promise<OutDocket> => {
     try {
       const options = {
@@ -698,6 +721,7 @@ const useOutDockets = () => {
     outDockets,
     getOutDockets,
     getOutDocketsByIds,
+    getOutDocketsBackOrder,
     getPendingShipments,
     getPendingShipment,
     deletePendingShipment,
