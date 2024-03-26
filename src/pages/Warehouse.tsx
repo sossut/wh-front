@@ -64,6 +64,7 @@ const Warehouse: React.FC<WarehouseProps> = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
+    if (!Array.isArray(rows)) return;
     const spots = rows?.flatMap((row) =>
       row.data?.flatMap((gap) => gap.data?.map((spot) => spot))
     );
@@ -108,18 +109,19 @@ const Warehouse: React.FC<WarehouseProps> = () => {
       <div id="warehouse">
         <table className="warehouse-table">
           <tbody className="warehouse-tbody">
-            {rows?.map((row, index) => {
-              return (
-                <Row
-                  stateChanger={handleState}
-                  pallets={statePallets}
-                  key={index}
-                  id={row.id}
-                  rowNumber={row.rowNumber}
-                  data={row.data}
-                />
-              );
-            })}
+            {Array.isArray(rows) &&
+              rows?.map((row, index) => {
+                return (
+                  <Row
+                    stateChanger={handleState}
+                    pallets={statePallets}
+                    key={index}
+                    id={row.id}
+                    rowNumber={row.rowNumber}
+                    data={row.data}
+                  />
+                );
+              })}
           </tbody>
         </table>
       </div>

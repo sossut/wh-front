@@ -12,16 +12,14 @@ export interface SentOutDocketModalProps {
 
 const SentOutDocketModal: React.FC<SentOutDocketModalProps> = ({
   onClose,
-  updateState,
+  // updateState,
   sentOutDocket
 }) => {
   return (
     <div className="big-modal">
       <button className="close-button" onClick={onClose}></button>
       <div className="big-modal-header">
-        <h3>
-          {sentOutDocket.departureAt + sentOutDocket.outDocket.docketNumber}
-        </h3>
+        <h3>{sentOutDocket.outDocket.docketNumber}</h3>
         <div className="big-modal-header-content">
           <div className="big-modal-header-client">
             <p>{(sentOutDocket.client as Client).name}</p>
@@ -29,7 +27,7 @@ const SentOutDocketModal: React.FC<SentOutDocketModalProps> = ({
           <div className="big-modal-header-date">
             <p>
               Lähetetty{' '}
-              {new Date(sentOutDocket.createdAt).toLocaleDateString('FI-fi')}
+              {new Date(sentOutDocket.departureAt).toLocaleDateString('FI-fi')}
             </p>
             <p>
               Toimitustapa{' '}

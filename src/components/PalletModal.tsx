@@ -28,6 +28,12 @@ const PalletModal: React.FC<PalletModalProps> = ({
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   console.log('Selected products at start', selectedProducts);
+  const [changeSpot, setChangeSpot] = useState<{
+    row: number;
+    gap: number;
+    spot: number;
+    palletId: number;
+  }>({ row: 0, gap: 0, spot: 0, palletId: id as number });
 
   const handleClick = () => {
     onClose();
@@ -252,6 +258,40 @@ const PalletModal: React.FC<PalletModalProps> = ({
                 </li>
               ))}
           </ul>
+        </form>
+        <form>
+          <h3>Vaihda lavan paikkaa</h3>
+
+          <label>
+            Rivi
+            <input
+              type="text"
+              value={changeSpot.row}
+              onChange={(e) =>
+                setChangeSpot({ ...changeSpot, row: parseInt(e.target.value) })
+              }
+            />
+          </label>
+          <label>
+            Väli
+            <input
+              type="text"
+              value={changeSpot.gap}
+              onChange={(e) =>
+                setChangeSpot({ ...changeSpot, gap: parseInt(e.target.value) })
+              }
+            />
+          </label>
+          <label>
+            Paikka
+            <input
+              type="text"
+              value={changeSpot.spot}
+              onChange={(e) =>
+                setChangeSpot({ ...changeSpot, spot: parseInt(e.target.value) })
+              }
+            />
+          </label>
         </form>
       </div>
     </div>

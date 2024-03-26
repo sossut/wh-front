@@ -1,6 +1,7 @@
 import React from 'react';
 import { SentOutDocket } from '../intefaces/SentOutDocket';
-import { useOutDockets } from '../hooks/ApiHooks';
+
+import SentOutDocketModal from './SentOutDocketModal';
 
 export interface SentOutDocketsProps {
   updateState: (
@@ -14,14 +15,12 @@ const SentOutDockets: React.FC<SentOutDocketsProps> = ({
   sentOutDockets
 }) => {
   const [outDocket, setOutDocket] = React.useState<SentOutDocket | null>(null);
-
-  const checkDocket =
-    (docket: SentOutDocket) =>
-    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      e.preventDefault();
-      console.log('check docket', docket);
-      setOutDocket(docket);
-    };
+  const [isModalOpan, setIsModalOpen] = React.useState(false);
+  const checkDocket = (docket: SentOutDocket) => {
+    console.log('check docket', docket);
+    setOutDocket(docket);
+    setIsModalOpen(true);
+  };
 
   const sortDockets = (dockets: SentOutDocket[]) => {
     if (!Array.isArray(dockets)) {
@@ -77,6 +76,13 @@ const SentOutDockets: React.FC<SentOutDocketsProps> = ({
             ))}
         </tbody>
       </table>
+      {isModalOpan && (
+        <SentOutDocketModal
+          onClose={() => setIsModalOpen(false)}
+          updateState={updateState}
+          sentOutDocket={outDocket as SentOutDocket}
+        />
+      )}
     </div>
   );
 };
