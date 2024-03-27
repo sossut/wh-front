@@ -33,14 +33,17 @@ const InDockets = () => {
     inDockets.filter((docket) => {
       return docket.docketNumber.includes(searchString);
     });
+  };
   return (
     <div className="dockets-body common-body">
       <header className="dockets-header common-header">
         <h1>Saapuneet rahtikirjat</h1>
         <div>
-          <input onChange={(e) => search(
-            e.target.value
-          )} type="text" placeholder="Hae"></input>
+          <input
+            onChange={(e) => search(e.target.value)}
+            type="text"
+            placeholder="Hae"
+          ></input>
           <button>Hae</button>
         </div>
 
