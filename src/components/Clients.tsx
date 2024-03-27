@@ -1,5 +1,6 @@
 import React from 'react';
 import { Client } from '../intefaces/Client';
+import { useClients } from '../hooks/ApiHooks';
 
 export interface ClientsProps {
   clients: Client[];
@@ -7,20 +8,25 @@ export interface ClientsProps {
 }
 
 const Clients: React.FC<ClientsProps> = ({ clients, updateClientsState }) => {
+  const { postClient } = useClients();
   const [clientName, setClientName] = React.useState('');
   const addNewClient = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const newClient = await postClient({ name: clientName });
+    if (!newClient) {
+      return;
+    }
     updateClientsState((prevClients) => [
       ...prevClients,
       {
-        id: prevClients.length + 1,
+        id: newClient.id,
         name: clientName
       }
     ]);
   };
   return (
     <div>
-      <h1>Toimittajat</h1>
+      <h1>Asiakkaat</h1>
       <form onSubmit={addNewClient}>
         <input
           type="text"

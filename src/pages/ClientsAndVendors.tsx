@@ -30,7 +30,7 @@ const ClientsAndVendors = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <div>
+    <div className="dockets">
       <Clients updateClientsState={updateClientsState} clients={clients} />
       <Vendors updateVendorsState={updateVendorsState} vendors={vendors} />
     </div>

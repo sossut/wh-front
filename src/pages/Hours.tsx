@@ -63,11 +63,12 @@ const Hours = () => {
     (async () => {
       const daysHoursList = await getDaysHoursList();
       console.log(daysHoursList);
-      setDaysHours(
-        daysHoursList.sort(
-          (a, b) => new Date(b.day).getTime() - new Date(a.day).getTime()
-        )
-      );
+      Array.isArray(daysHoursList) &&
+        setDaysHours(
+          daysHoursList.sort(
+            (a, b) => new Date(b.day).getTime() - new Date(a.day).getTime()
+          )
+        );
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
