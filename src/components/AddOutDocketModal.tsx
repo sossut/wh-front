@@ -375,17 +375,7 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
             Tallenna
           </button>
         </form>
-        <div>
-          <p>Täytä tämä jos lähete kerätty jo</p>
-          <label htmlFor="parcelQuantity">Pakettien määrä</label>
-          <input
-            type="number"
-            id="parcelQuantity"
-            onChange={(e) => {
-              setParcelQuantity(Number(e.target.value));
-            }}
-          ></input>
-        </div>
+
         {isAddingProduct && (
           <div>
             <h2>Lisää uusi tuote</h2>
@@ -417,6 +407,17 @@ const AddOutDocketModal: React.FC<AddOutDocketModalProps> = ({
             </form>
           </div>
         )}
+      </div>
+      <div>
+        <p>Täytä tämä jos lähete kerätty jo</p>
+        <label htmlFor="parcelQuantity">Pakettien määrä</label>
+        <input
+          type="number"
+          id="parcelQuantity"
+          onChange={(e) => {
+            setParcelQuantity(Number(e.target.value));
+          }}
+        ></input>
       </div>
     </div>
   );

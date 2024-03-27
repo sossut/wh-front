@@ -844,7 +844,40 @@ const useClients = () => {
       return {} as Client[];
     }
   };
-  return { getClients };
+
+  const getClient = async (id = 0): Promise<Client> => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const client = await fetchJson(`${apiUrl}/client/${id}`, options);
+      return client;
+    } catch (error) {
+      console.error(error);
+      return {} as Client;
+    }
+  };
+
+  const postClient = async (data: unknown) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+      const json = await fetchJson(`${apiUrl}/client`, options);
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  return { getClients, getClient, postClient };
 };
 
 const useVendors = () => {
@@ -863,7 +896,39 @@ const useVendors = () => {
       return {} as Vendor[];
     }
   };
-  return { getVendors };
+  const getVendor = async (id = 0): Promise<Vendor> => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const vendor = await fetchJson(`${apiUrl}/vendor/${id}`, options);
+      return vendor;
+    } catch (error) {
+      console.error(error);
+      return {} as Vendor;
+    }
+  };
+
+  const postVendor = async (data: unknown) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+      const json = await fetchJson(`${apiUrl}/vendor`, options);
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  return { getVendors, getVendor, postVendor };
 };
 
 const useDaysHours = () => {

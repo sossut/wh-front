@@ -11,22 +11,19 @@ const Hours = () => {
   });
   const {
     getDaysHoursList,
-    getDaysHours,
+
     postDaysHours,
-    putDaysHours,
+
     deleteDaysHours
   } = useDaysHours();
   const [daysHoursSingle, setDaysHoursSingle] = React.useState<DaysHours>(
     {} as DaysHours
   );
 
-  const edit =
-    (daysHoursSingle: DaysHours) =>
-    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      e.preventDefault();
-      console.log('edit');
-      setDaysHoursSingle(daysHoursSingle);
-    };
+  const edit = (daysHoursSingle: DaysHours) => {
+    console.log('edit');
+    setDaysHoursSingle(daysHoursSingle);
+  };
 
   const handleNewDaysHours = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
