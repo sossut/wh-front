@@ -19,8 +19,15 @@ const PalletModal: React.FC<PalletModalProps> = ({
   stateChanger = () => {}
 }) => {
   console.log('spotId', spotId);
-  const { getPallet, pallet, postPallet, putPallet, deletePallet } =
-    useWarehouse();
+  const {
+    getPallet,
+    pallet,
+    postPallet,
+    putPallet,
+    deletePallet,
+    getSpotIdByRowGapSpot,
+    putPalletSpot
+  } = useWarehouse();
   const { getProducts } = useProducts();
   const [productIds, setProductIds] = useState<number[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -200,7 +207,28 @@ const PalletModal: React.FC<PalletModalProps> = ({
     );
     setFilteredProducts(filtered);
   };
-
+  const handleSpotChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('changeSpot', changeSpot);
+    const spotId = await getSpotIdByRowGapSpot(
+      changeSpot.row,
+      changeSpot.gap,
+      changeSpot.spot
+    );
+    if (spotId.palletId !== null) {
+      alert('Paikka on jo varattu');
+      return;
+    }
+    await putPalletSpot(pallet.id, spotId.id as number);
+    stateChanger((prevPallets) => {
+      return prevPallets.map((pallet) => {
+        if (pallet.id === id) {
+          return { ...pallet, spotId: spotId.id as number };
+        }
+        return pallet;
+      });
+    });
+  };
   return (
     <div className="modal">
       <button className="close-button" onClick={handleClick}>
@@ -259,40 +287,57 @@ const PalletModal: React.FC<PalletModalProps> = ({
               ))}
           </ul>
         </form>
-        <form>
-          <h3>Vaihda lavan paikkaa</h3>
-
-          <label>
-            Rivi
-            <input
-              type="text"
-              value={changeSpot.row}
-              onChange={(e) =>
-                setChangeSpot({ ...changeSpot, row: parseInt(e.target.value) })
-              }
-            />
-          </label>
-          <label>
-            Väli
-            <input
-              type="text"
-              value={changeSpot.gap}
-              onChange={(e) =>
-                setChangeSpot({ ...changeSpot, gap: parseInt(e.target.value) })
-              }
-            />
-          </label>
-          <label>
-            Paikka
-            <input
-              type="text"
-              value={changeSpot.spot}
-              onChange={(e) =>
-                setChangeSpot({ ...changeSpot, spot: parseInt(e.target.value) })
-              }
-            />
-          </label>
-        </form>
+        {id != 0 && (
+          <form onSubmit={handleSpotChange}>
+            <h3>Vaihda lavan paikkaa</h3>
+            <div>
+              <label>
+                Rivi
+                <input
+                  type="number"
+                  value={changeSpot.row}
+                  onChange={(e) =>
+                    setChangeSpot({
+                      ...changeSpot,
+                      row: parseInt(e.target.value)
+                    })
+                  }
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Väli
+                <input
+                  type="number"
+                  value={changeSpot.gap}
+                  onChange={(e) =>
+                    setChangeSpot({
+                      ...changeSpot,
+                      gap: parseInt(e.target.value)
+                    })
+                  }
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Paikka
+                <input
+                  type="number"
+                  value={changeSpot.spot}
+                  onChange={(e) =>
+                    setChangeSpot({
+                      ...changeSpot,
+                      spot: parseInt(e.target.value)
+                    })
+                  }
+                />
+              </label>
+            </div>
+            <button type="submit">Vaihda paikkaa</button>
+          </form>
+        )}
       </div>
     </div>
   );

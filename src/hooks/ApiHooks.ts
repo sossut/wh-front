@@ -14,6 +14,8 @@ import { PendingShipment } from '../intefaces/PendingShipment';
 import { Client } from '../intefaces/Client';
 import { Vendor } from '../intefaces/Vendor';
 import { DaysHours } from '../intefaces/DaysHours';
+import { MonthsHours } from '../intefaces/MonthsHours';
+import { DaysShipments } from '../intefaces/DaysShipments';
 
 const fetchJson = async (url: string, options = {}) => {
   try {
@@ -83,6 +85,29 @@ const useWarehouse = () => {
       return spot;
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const getSpotIdByRowGapSpot = async (
+    row = 0,
+    gap = 0,
+    spot = 0
+  ): Promise<SpotProps> => {
+    try {
+      const fetchOptions = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const id = await fetchJson(
+        `${apiUrl}/spot/row-gap-spot/${row}/${gap}/${spot}`,
+        fetchOptions
+      );
+      return id;
+    } catch (error) {
+      console.error(error);
+      return {} as SpotProps;
     }
   };
 
@@ -253,6 +278,7 @@ const useWarehouse = () => {
   return {
     getSpots,
     getSpot,
+    getSpotIdByRowGapSpot,
     postSpots,
     putSpot,
     getRowsWithGapsWithSpots,
@@ -717,6 +743,64 @@ const useOutDockets = () => {
     }
   };
 
+  const putDaysShipments = async (id = 0, data: unknown) => {
+    try {
+      const options = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+
+      const json = await fetchJson(
+        `${apiUrl}/sent-outdocket/days-shipments/${id}`,
+        options
+      );
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getDaysShipment = async (id = 0) => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const json = await fetchJson(
+        `${apiUrl}/sent-outdocket/days-shipments/${id}`,
+        options
+      );
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getDaysShipments = async (): Promise<DaysShipments[]> => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const daysShipments = await fetchJson(
+        `${apiUrl}/sent-outdocket/days-shipments`,
+        options
+      );
+      return daysShipments;
+    } catch (error) {
+      console.error(error);
+      return {} as DaysShipments[];
+    }
+  };
+
   return {
     outDockets,
     getOutDockets,
@@ -735,7 +819,10 @@ const useOutDockets = () => {
     postPendingShipment,
     putPendingShipment,
     getTransportOptions,
-    postDaysShipments
+    postDaysShipments,
+    putDaysShipments,
+    getDaysShipment,
+    getDaysShipments
   };
 };
 
@@ -1012,12 +1099,70 @@ const useDaysHours = () => {
     }
   };
 
+  const getMonthsHoursList = async (): Promise<MonthsHours[]> => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const monthsHours = await fetchJson(
+        `${apiUrl}/days-hours/months`,
+        options
+      );
+      return monthsHours;
+    } catch (error) {
+      console.error(error);
+      return {} as MonthsHours[];
+    }
+  };
+
+  const getMonthsHours = async (id = 0): Promise<MonthsHours> => {
+    try {
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
+      const monthsHours = await fetchJson(
+        `${apiUrl}/days-hours/months/${id}`,
+        options
+      );
+      return monthsHours;
+    } catch (error) {
+      console.error(error);
+      return {} as MonthsHours;
+    }
+  };
+
+  const postMonthsHours = async (data: unknown) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      };
+      const json = await fetchJson(`${apiUrl}/days-hours/months`, options);
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return {
     getDaysHoursList,
     getDaysHours,
     postDaysHours,
     putDaysHours,
-    deleteDaysHours
+    deleteDaysHours,
+    getMonthsHoursList,
+    getMonthsHours,
+    postMonthsHours
   };
 };
 

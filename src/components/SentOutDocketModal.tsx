@@ -17,7 +17,9 @@ const SentOutDocketModal: React.FC<SentOutDocketModalProps> = ({
 }) => {
   return (
     <div className="big-modal">
-      <button className="close-button" onClick={onClose}></button>
+      <button className="close-button" onClick={onClose}>
+        Sulje
+      </button>
       <div className="big-modal-header">
         <h3>{sentOutDocket.outDocket.docketNumber}</h3>
         <div className="big-modal-header-content">

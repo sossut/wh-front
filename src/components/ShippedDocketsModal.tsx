@@ -33,9 +33,12 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
   updateCheckedState
 }) => {
   const [isSent, setIsSent] = React.useState(false);
+  const [beforeOutDockets, setBeforeOutDockets] = React.useState<OutDocket[]>(
+    []
+  );
   const [outDockets, setOutDockets] = React.useState<OutDocket[]>([]);
   const [daysShipments, setDaysShipments] = React.useState<DaysShipments>();
-  const [backOrderArray, setBackOrderArray] = React.useState<OutDocket[]>([]);
+
   const {
     postSentOutDocket,
     getOutDocketsByIds,
@@ -43,8 +46,8 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
     getPendingShipments,
     getSentOutDockets,
     postDaysShipments,
-    getOutDockets,
-    getOutDocketsBackOrder
+    putDaysShipments,
+    getOutDockets
   } = useOutDockets();
   const handleSent = async () => {
     try {
@@ -59,8 +62,9 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
       const data = {
         ids: ids
       };
-      const bOArray = await getOutDocketsBackOrder(data);
-      setBackOrderArray(bOArray);
+      const beforeOutDockets = await getOutDocketsByIds(data);
+      setBeforeOutDockets(beforeOutDockets);
+
       await Promise.all(
         pendingShipments.map(async (pendingShipment) => {
           const sentOutDocket: unknown = {
@@ -89,7 +93,7 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
         })
       );
 
-      await postDaysShipments(daysShipments);
+      const postDS = await postDaysShipments(daysShipments);
       setIsSent(true);
       for (const pendingShipment of pendingShipments) {
         await deletePendingShipment(pendingShipment.id as number);
@@ -108,7 +112,68 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
       });
 
       const outDockets = await getOutDocketsByIds(data);
+      const filterDeliveredProducts = (
+        outDockets: OutDocket[],
+        beforeOutDockets: OutDocket[]
+      ) => {
+        return outDockets.map((outDocket) => {
+          const beforeOutDocket = beforeOutDockets.find((beforeOutDocket) => {
+            return beforeOutDocket.id == outDocket.id;
+          });
+
+          if (beforeOutDocket) {
+            outDocket.products = outDocket.products?.filter(
+              (product) =>
+                !beforeOutDocket.products?.some(
+                  (beforeProduct) =>
+                    beforeProduct.id === product.id &&
+                    beforeProduct.deliveredProductQuantity > 0
+                )
+            );
+          }
+
+          return outDocket;
+        });
+      };
+      const newOD = filterDeliveredProducts(outDockets, beforeOutDockets);
+      console.log({ newOD });
       setOutDockets(outDockets);
+      const convertToJSON = (
+        outDockets: OutDocket[],
+        beforeOutDockets: OutDocket[]
+      ) => {
+        if (!Array.isArray(outDockets)) {
+          return [];
+        }
+
+        return outDockets.map((outDocket) => {
+          const allProductsDelivered = outDocket.products?.every(
+            (product) =>
+              product.deliveredProductQuantity ===
+              product.orderedProductQuantity
+          );
+
+          const isBackOrder = beforeOutDockets.some(
+            (backOrder) => backOrder.id === outDocket.id && backOrder.backOrder
+          );
+
+          const products = outDocket.products?.map((product) => ({
+            code: product.code,
+            deliveredProductQuantity: product.deliveredProductQuantity,
+            orderedProductQuantity: product.orderedProductQuantity
+          }));
+
+          return {
+            docketNumber: isBackOrder
+              ? `${outDocket.docketNumber}JT`
+              : outDocket.docketNumber,
+            products: allProductsDelivered ? 'TM' : products
+          };
+        });
+      };
+      const json = convertToJSON(outDockets, beforeOutDockets);
+      console.log({ json });
+      await putDaysShipments(postDS.id as number, { json: json });
       const newOutDockets = (await getOutDockets()) || [];
       updateOutDocketsState(() => {
         return newOutDockets;
@@ -195,7 +260,7 @@ const ShippedDocketsModal: React.FC<ShippedDocketsModalProps> = ({
                             product.deliveredProductQuantity ===
                             product.orderedProductQuantity
                         );
-                        const isBackOrder = backOrderArray.some(
+                        const isBackOrder = beforeOutDockets.some(
                           (backOrder) =>
                             backOrder.id === outDocket.id && backOrder.backOrder
                         );
