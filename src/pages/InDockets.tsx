@@ -25,7 +25,15 @@ const InDockets = () => {
     (async () => {
       const inDockets = await getInDockets();
       console.log(inDockets);
-      setInDockets(Array.isArray(inDockets) ? inDockets : []);
+      setInDockets(
+        Array.isArray(inDockets)
+          ? inDockets.sort((a, b) =>
+              (b.arrivedAt ? b.arrivedAt.toString() : '').localeCompare(
+                a.arrivedAt ? a.arrivedAt.toString() : ''
+              )
+            )
+          : []
+      );
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -71,7 +79,7 @@ const InDockets = () => {
                     <td>{inDocket.docketNumber}</td>
                     <td>{(inDocket.vendor as Vendor).name}</td>
                     <td>
-                      {new Date(inDocket.createdAt ?? '').toLocaleDateString(
+                      {new Date(inDocket.arrivedAt ?? '').toLocaleDateString(
                         'FI-fi'
                       )}
                     </td>

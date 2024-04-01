@@ -55,7 +55,12 @@ const AddInDocketModal: React.FC<AddInDocketModalProps> = ({
     const id = await postInDocket(iD);
     const newInDocket = await getInDocket(id.id);
     stateChange((prevDockets) => {
-      return [...prevDockets, newInDocket];
+      const newDockets = [...prevDockets, newInDocket];
+      return newDockets.sort((a, b) =>
+        (b.arrivedAt ? b.arrivedAt.toString() : '').localeCompare(
+          a.arrivedAt ? a.arrivedAt.toString() : ''
+        )
+      );
     });
     onClose();
   };

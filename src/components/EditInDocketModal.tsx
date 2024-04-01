@@ -34,6 +34,15 @@ const EditInDocketModal: React.FC<EditInDocketModalProps> = ({
       });
     });
   };
+  const handleDelete = async () => {
+    const del = await deleteInDocket(inDocket.id as number);
+    if (!del) {
+      return;
+    }
+    stateChange((prevDockets) => {
+      return prevDockets.filter((d) => d.id !== inDocket.id);
+    });
+  };
   return (
     <div className="big-modal">
       <button className="close-button" onClick={onClose}>
@@ -46,17 +55,85 @@ const EditInDocketModal: React.FC<EditInDocketModalProps> = ({
           <input
             type="text"
             id="in-docket-number"
-            value={inDocket.docketNumber}
+            value={inDocketState.docketNumber}
+            onChange={(e) =>
+              setInDocketState({
+                ...inDocketState,
+                docketNumber: e.target.value
+              })
+            }
           />
         </div>
         <div>
           <label htmlFor="in-docket-date">Saapumiserän päivämäärä</label>
-          <input type="date" id="in-docket-date" value={1} />
+          <input
+            type="date"
+            id="in-docket-date"
+            value={
+              inDocketState.arrivedAt
+                ? new Date(
+                    new Date(inDocketState.arrivedAt).setHours(
+                      new Date(inDocketState.arrivedAt).getHours() + 2
+                    )
+                  )
+                    .toISOString()
+                    .split('T')[0]
+                : 'N/A'
+            }
+            onChange={(e) =>
+              setInDocketState({
+                ...inDocketState,
+                arrivedAt: new Date(e.target.value)
+              })
+            }
+          />
         </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Koodi</th>
+              <th>Tuote</th>
+              <th>Saapunut määrä</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.isArray(inDocketState.products) &&
+              inDocketState.products.map((product) => (
+                <tr key={product.id}>
+                  <td>{product.code}</td>
+                  <td>{product.name}</td>
+                  <td>
+                    <input
+                      type="number"
+                      value={product.receivedProductQuantity}
+                      onChange={(e) => {
+                        setInDocketState((prev) => {
+                          return {
+                            ...prev,
+                            products: prev.products.map((p) => {
+                              if (p.id === product.id) {
+                                return {
+                                  ...p,
+                                  arrivedProductQuantity: Number(e.target.value)
+                                };
+                              }
+                              return p;
+                            })
+                          };
+                        });
+                      }}
+                    />
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
 
         <button type="submit">Tallenna</button>
       </form>
-      <button>Poista Lähete</button>
+      <button type="button" onClick={handleDelete}>
+        Poista Lähete
+      </button>
     </div>
   );
 };
