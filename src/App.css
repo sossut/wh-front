@@ -364,6 +364,10 @@ h1 {
 .delete-button {
   width: fit-content;
 }
+.docket-number-td {
+  min-width: 80px;
+  text-align: center;
+}
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

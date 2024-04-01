@@ -48,7 +48,15 @@ const DaysShipmentsComp = () => {
                       (outDocket: OutDocket) => {
                         return (
                           <tr key={outDocket.id}>
-                            <td>{outDocket.docketNumber}</td>
+                            <td className="docket-number-td">
+                              <button
+                                onClick={() =>
+                                  console.log('clicked', outDocket.docketNumber)
+                                }
+                              >
+                                {outDocket.docketNumber}
+                              </button>
+                            </td>
 
                             <td>
                               {typeof outDocket.products === 'string' ? (
